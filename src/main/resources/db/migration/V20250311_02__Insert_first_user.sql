@@ -1,0 +1,1 @@
+INSERT INTO app_user (subject) VALUES ('1234567890');
