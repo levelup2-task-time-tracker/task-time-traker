@@ -22,9 +22,9 @@ public class UsersCommand {
 
     @ShellMethod(key = "getUsers", value = "Returns the users")
     public String getUsers(){
-        if (!authToken.isAuthenticated()) {
-            return "You must login first.";
-        }
+//        if (!authToken.isAuthenticated()) {
+//            return "You must login first.";
+//        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + authToken.getAccessToken());
@@ -35,4 +35,12 @@ public class UsersCommand {
 
         return response.getBody();
     }
+
+    @ShellMethod(key="testNoToken", value="Test unlogged in request")
+    public String testNoToken(){
+        ResponseEntity<String> response = restTemplate.getForEntity(BASE_URL + "/users", String.class);
+
+        return response.getBody();
+    }
+
 }
