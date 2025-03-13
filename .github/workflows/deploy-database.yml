@@ -1,0 +1,58 @@
+name: Deploy Database
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: Terraform Deployment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
+
+      - name: Change to Terraform Directory
+        run: cd db-deployment
+        shell: bash
+
+      - name: Initialize Terraform
+        run: |
+          cd db-deployment
+          terraform init
+
+      - name: Validate Terraform
+        run: |
+          cd db-deployment
+          terraform validate
+
+      - name: Plan Terraform Changes
+        run: |
+          cd db-deployment
+          terraform plan
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          TF_VAR_DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          TF_VAR_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+      - name: Apply Terraform Changes
+        if: github.ref == 'refs/heads/main'
+        run: |
+          cd db-deployment
+          terraform apply -auto-approve
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          TF_VAR_DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          TF_VAR_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
