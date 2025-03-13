@@ -21,7 +21,7 @@ jobs:
           docker run --rm \
             --volume ${GITHUB_WORKSPACE}/migrations:/flyway/sql:ro \
             redgate/flyway \
-            -url="${{ secrets.DATABASE_URL }}" \
+            -url="${{ secrets.DB_URL }}" \
             -user="${{ secrets.DB_USERNAME }}" \
             -password="${{ secrets.DB_PASSWORD }}" \
             migrate
