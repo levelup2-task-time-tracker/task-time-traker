@@ -19,7 +19,7 @@ jobs:
       - name: Execute Flyway Migrations
         run: |
           docker run --rm \
-            --volume ${GITHUB_WORKSPACE}/migrations:/flyway/sql:ro \
+            --volume ${GITHUB_WORKSPACE}/api/src/main/resources/db/migration:/flyway/sql:ro \
             redgate/flyway \
             -url="${{ secrets.DB_URL }}" \
             -user="${{ secrets.DB_USERNAME }}" \
