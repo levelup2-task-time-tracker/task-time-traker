@@ -1,5 +1,3 @@
-CREATE DATABASE task_time_tracker;
-
 CREATE TABLE app_user (
     user_id SERIAL PRIMARY KEY,
     subject VARCHAR(30)
