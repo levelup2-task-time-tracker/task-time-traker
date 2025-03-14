@@ -1,2 +1,2 @@
 ALTER TABLE IF EXISTS task
-ADD COLUMN IF NOT EXIST story_points integer;
+ADD COLUMN IF NOT EXISTS story_points BIGINT;
