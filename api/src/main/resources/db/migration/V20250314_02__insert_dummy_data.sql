@@ -15,17 +15,17 @@ INSERT INTO project (description, manager) VALUES
 ('Mobile App Feature Development', 1);
 
 INSERT INTO task (name, description, user_id, project_id, story_points) VALUES
-('Homepage UI Revamp', 'Redesign the homepage user interface.', 1, 1, 1),
-('Product Page Optimization', 'Improve the product page loading speed.', 1, 1, 3),
-('Shopping Cart Integration', 'Integrate a new shopping cart system.', 1, 1, 1),
-('Payment Gateway Setup', 'Configure the payment gateway.', 1, 1, 2),
-('User Profile Update', 'Implement user profile update functionality.', 1, 1, 3),
-('Search Functionality Enhancement', 'Enhance the website search functionality.', 1, 1, 1),
-('Mobile Responsiveness Fixes', 'Fix mobile responsiveness issues.', 1, 1, 2),
-('Push Notification Implementation', 'Implement push notifications for the app.', 1, 2, 2),
-('Location Services Integration', 'Integrate location services for user location.', 1, 2, 3),
-('Offline Mode Development', 'Develop offline mode functionality.', 1, 2, 3),
-('User Authentication Update', 'Update user authentication system.', 1, 2, 3);
+('Homepage UI Revamp', 'Redesign the homepage user interface.', 2, 1, 1),
+('Product Page Optimization', 'Improve the product page loading speed.', 2, 1, 3),
+('Shopping Cart Integration', 'Integrate a new shopping cart system.', 2, 1, 1),
+('Payment Gateway Setup', 'Configure the payment gateway.', 2, 1, 2),
+('User Profile Update', 'Implement user profile update functionality.', 2, 1, 3),
+('Search Functionality Enhancement', 'Enhance the website search functionality.', 2, 1, 1),
+('Mobile Responsiveness Fixes', 'Fix mobile responsiveness issues.', 2, 1, 2),
+('Push Notification Implementation', 'Implement push notifications for the app.', 2, 2, 2),
+('Location Services Integration', 'Integrate location services for user location.', 2, 2, 3),
+('Offline Mode Development', 'Develop offline mode functionality.', 2, 2, 3),
+('User Authentication Update', 'Update user authentication system.', 2, 2, 3);
 
 INSERT INTO time_log (task_id, start_date_time, end_date_time) VALUES
 (1, '2025-03-03 09:00:00', '2025-03-03 12:00:00'),
