@@ -1,0 +1,27 @@
+name: Database Migrations with Flyway
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'api/src/main/resources/db/migration/**'
+
+jobs:
+  FlywayMigration:
+    name: Run Flyway Migrations
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Execute Flyway Migrations
+        run: |
+          docker run --rm \
+            --volume ${GITHUB_WORKSPACE}/api/src/main/resources/db/migration:/flyway/sql:ro \
+            redgate/flyway \
+            -url="${{ secrets.DB_URL }}" \
+            -user="${{ secrets.DB_USERNAME }}" \
+            -password="${{ secrets.DB_PASSWORD }}" \
+            migrate

@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS task
+ADD COLUMN IF NOT EXIST story_points integer;
