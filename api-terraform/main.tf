@@ -4,7 +4,7 @@ provider "aws" {
 
 resource "aws_vpc" "default_vpc" {
   cidr_block = "20.0.0.0/19"
-  instance_tenancy = "default"
+  enable_dns_hostnames = true
 }
 
 resource "aws_security_group" "task_time_tracker_sg" {
