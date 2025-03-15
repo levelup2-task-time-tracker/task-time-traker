@@ -53,6 +53,7 @@ public class OAuthController {
                     code,
                     "http://localhost:8000/auth/code"
             ).execute().getAccessToken();
+
         } catch (IOException e) {
             System.err.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
