@@ -3,8 +3,7 @@ provider "aws" {
 }
 
 resource "aws_vpc" "main_vpc" {
-  cidr_block = "10.0.0.0/17"
-  enable_dns_hostnames = true
+  cidr_block = "10.0.0.0/16"
 }
 
 resource "aws_security_group" "task_time_tracker_sg" {
