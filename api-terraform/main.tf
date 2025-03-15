@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_security_group" "task_time_tracker_sg" {
-  vpc_id      = "vpc-02df91c0fe13aef1d"
+  vpc_id      = "vpc-00f9751cbde1c64f2"
   name        = "task-time-tracker-sg"
   description = "Allow inbound SSH and HTTP traffic"
   
