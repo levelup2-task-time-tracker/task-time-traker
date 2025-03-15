@@ -2,9 +2,15 @@ provider "aws" {
   region = "af-south-1"
 }
 
+resource "aws_vpc" "default_vpc" {
+  cidr_block = "20.0.0.0/19"
+  instance_tenancy = "default"
+}
+
 resource "aws_security_group" "task_time_tracker_sg" {
   name        = "task-time-tracker-sg"
   description = "Allow inbound SSH and HTTP traffic"
+  vpc_id      = aws_vpc.default_vpc.id
 
   ingress {
     from_port   = 22
