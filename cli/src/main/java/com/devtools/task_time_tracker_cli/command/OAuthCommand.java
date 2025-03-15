@@ -75,4 +75,9 @@ public class OAuthCommand {
             return "Error retrieving token: " + e.getMessage();
         }
     }
+
+    @ShellMethod(key = "getAuthToken", value = "Return the auth token")
+    public String getToken() {
+        return authToken.getAccessToken();
+    }
 }

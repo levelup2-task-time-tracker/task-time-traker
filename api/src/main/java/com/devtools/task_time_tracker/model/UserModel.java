@@ -2,6 +2,8 @@ package com.devtools.task_time_tracker.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 
 @Entity
 @Table(name = "app_user")
@@ -28,4 +30,6 @@ public class UserModel {
     public void setSubject(String subject) {
         this.subject = subject;
     }
+
+
 }
