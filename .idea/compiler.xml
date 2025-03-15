@@ -3,15 +3,15 @@
   <component name="CompilerConfiguration">
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
-      <profile name="Annotation profile for task-time-tracker" enabled="true">
+      <profile name="Annotation profile for task_time_tracker_cli" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
         </processorPath>
-        <module name="task-time-tracker" />
         <module name="task_time_tracker_cli" />
+        <module name="task-time-tracker" />
       </profile>
     </annotationProcessing>
   </component>

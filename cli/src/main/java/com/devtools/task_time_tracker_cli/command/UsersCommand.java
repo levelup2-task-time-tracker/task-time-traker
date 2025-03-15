@@ -1,46 +1,29 @@
 package com.devtools.task_time_tracker_cli.command;
 
-import com.devtools.task_time_tracker_cli.component.AuthToken;
+import com.devtools.task_time_tracker_cli.service.ApiService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 
 @ShellComponent
 public class UsersCommand {
-    private final AuthToken authToken;
-    private final RestTemplate restTemplate = new RestTemplate();
-    private static final String BASE_URL = "http://localhost:8080";
+    @Autowired
+    private ApiService api;
 
-    public UsersCommand(AuthToken token) {
-        this.authToken = token;
-    }
-
-    @ShellMethod(key = "getUsers", value = "Returns the users")
+    @ShellMethod(key = "get-users", value = "Returns the users")
     public String getUsers(){
-//        if (!authToken.isAuthenticated()) {
-//            return "You must login first.";
-//        }
+        if (api.authenticate()) {
+            return "You must login first.";
+        }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + authToken.getAccessToken());
-
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(BASE_URL + "/users", HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> response = api.getRequest("/users", new HashMap<>());
 
         return response.getBody();
     }
-
-    @ShellMethod(key="testNoToken", value="Test unlogged in request")
-    public String testNoToken(){
-        ResponseEntity<String> response = restTemplate.getForEntity(BASE_URL + "/users", String.class);
-
-        return response.getBody();
-    }
-
 }
