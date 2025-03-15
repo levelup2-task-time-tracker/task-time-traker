@@ -26,7 +26,7 @@ resource "aws_subnet" "subnet_b" {
 resource "aws_security_group" "task_time_tracker_sg" {
   name        = "task-time-tracker-sg"
   description = "Allow inbound SSH and HTTP traffic"
-  vpc_id      = aws_vpc.main_vpc.id
+  vpc_id      = aws_vpc.my_vpc.id
 
   ingress {
     from_port   = 22
