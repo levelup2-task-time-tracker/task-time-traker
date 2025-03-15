@@ -64,27 +64,27 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.deleteProject(projectId));
     }
     
-    @GetMapping("/projects/{projectId}/time")
+    @GetMapping("/{projectId}/time")
     public ResponseEntity<Double> getTotalTimeSpent(@AuthenticationPrincipal OAuth2User user, @PathVariable String projectId) {
         return ResponseEntity.ok(0.0);
     }
 
-    @GetMapping("/projects/{projectId}/time/person")
+    @GetMapping("/{projectId}/time/person")
     public ResponseEntity<Double> getTimeSpentPerPerson(@AuthenticationPrincipal OAuth2User user, @PathVariable String projectId) {
         return ResponseEntity.ok(0.0);
     }
 
-    @GetMapping("/projects/{projectId}/time/task")
+    @GetMapping("/{projectId}/time/task")
     public ResponseEntity<Double> getTimeSpentPerTask(@AuthenticationPrincipal OAuth2User user, @PathVariable String projectId) {
         return ResponseEntity.ok(0.0);
     }
 
-    @GetMapping("/projects/{projectId}/time/days_per_point")
+    @GetMapping("/{projectId}/time/days_per_point")
     public ResponseEntity<Double> getAvgDayPerStoryPoint(@AuthenticationPrincipal OAuth2User user, @PathVariable String projectId) {
         return ResponseEntity.ok(0.0);
     }
 
-    @GetMapping("/projects/{projectId}/story_points")
+    @GetMapping("/{projectId}/story_points")
     public ResponseEntity<Double> getTotalStoryPoint(@AuthenticationPrincipal OAuth2User user, @PathVariable String projectId) {
         return ResponseEntity.ok(0.0);
     }
