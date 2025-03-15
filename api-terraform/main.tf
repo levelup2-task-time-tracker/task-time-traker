@@ -10,7 +10,7 @@ resource "aws_vpc" "main_vpc" {
 resource "aws_security_group" "task_time_tracker_sg" {
   name        = "task-time-tracker-sg"
   description = "Allow inbound SSH and HTTP traffic"
-  vpc_id      = aws_vpc.main_vpcc.id
+  vpc_id      = aws_vpc.main_vpc.id
 
   ingress {
     from_port   = 22
