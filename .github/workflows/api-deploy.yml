@@ -1,0 +1,51 @@
+name: Deploy Spring Boot to EC2
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main 
+
+jobs:
+  build_and_deploy:
+    name: Build and Deploy Spring Boot App
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+
+
+      - name: Build Spring Boot app
+        run: |
+            cd api
+            mvn clean package -DskipTests
+           
+      - name: Copy JAR to EC2 instance
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.EC2_PUBLIC_IP }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }} 
+          port: 22
+          source: "api/target/*.jar"
+          target: "/home/ec2-user"
+
+      - name: Run Spring Boot Application
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.EC2_PUBLIC_IP }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            cd /home/ec2-user
+            nohup java -jar *.jar > springboot-app.log 2>&1 &
+
+     
