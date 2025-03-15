@@ -2,31 +2,27 @@ provider "aws" {
   region = "af-south-1"
 }
 
-resource "aws_vpc" "my_vpc" {
+resource "aws_vpc" "task_time_tracker_vpc" {
   cidr_block = "10.0.0.0/16"
+  enable_dns_support = true
   enable_dns_hostnames = true
-
-  tags = {
-    Name = "api_app_vpc"
-  }
 }
 
-resource "aws_subnet" "subnet_a" {
-  vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = cidrsubnet(var.vpc_cidr_block, 8, 1)
-  availability_zone = "af-south-1a"
+resource "aws_subnet" "task_time_tracker_subnet" {
+  vpc_id                  = aws_vpc.task_time_tracker_vpc.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "af-south-1" 
+  map_public_ip_on_launch = true
 }
 
-resource "aws_subnet" "subnet_b" {
-  vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = cidrsubnet(var.vpc_cidr_block, 8, 2)
-  availability_zone = "af-south-1b"
+resource "aws_internet_gateway" "task_time_tracker_igw" {
+  vpc_id = aws_vpc.task_time_tracker_vpc.id
 }
 
 resource "aws_security_group" "task_time_tracker_sg" {
   name        = "task-time-tracker-sg"
   description = "Allow inbound SSH and HTTP traffic"
-  vpc_id      = aws_vpc.my_vpc.id
+  vpc_id      = aws_vpc.task_time_tracker_vpc.id
 
   ingress {
     from_port   = 22
