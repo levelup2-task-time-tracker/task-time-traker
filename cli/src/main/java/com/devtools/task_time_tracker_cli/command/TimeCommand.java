@@ -13,12 +13,22 @@ public class TimeCommand {
     private ApiService api;
 
     @ShellMethod(key="time-start", value="Start tracking time for a task")
-    public String startTime(int task){
+    public String startTime(String taskId){
         if (api.authenticate()) {
             return "You must login first.";
+        }else{
+            //Make api call here
+            return "Start-timing";
         }
+    }
 
-        //Make api call here
-        return "Working";
+    @ShellMethod(key="time-stop", value="Stop tracking time for a task")
+    public String stopTime(String taskId){
+        if (api.authenticate()) {
+            return "You must login first.";
+        }else{
+            //Make api call here
+            return "Stop-timing";
+        }
     }
 }

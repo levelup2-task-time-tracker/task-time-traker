@@ -20,14 +20,14 @@ class UsersCommandTest {
     private RestTemplate restTemplate;
 
     @InjectMocks
-    private UsersCommand usersCommand;
+    private UserCommand usersCommand;
 
     private static final String BASE_URL = "http://localhost:8080";
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        usersCommand = new UsersCommand(authToken);
+        usersCommand = new UserCommand(authToken);
     }
 
     @Test
