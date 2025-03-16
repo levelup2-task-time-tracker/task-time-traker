@@ -23,7 +23,7 @@ public class TimeCommand {
         }else{
             var params = new HashMap<String, Object>();
             ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"time/" + taskId + "/start", params);
-            return "Current time spent on task " + taskId + response.getBody();
+            return "Current time spent on task " + taskId + ": " + response.getBody();
         }
     }
 
@@ -34,7 +34,7 @@ public class TimeCommand {
         }else{
             var params = new HashMap<String, Object>();
             ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"time/" + taskId + "/stop", params);
-            return "Current time spent on task " + taskId + response.getBody();
+            return "Current time spent on task " + taskId + ": " + response.getBody();
         }
     }
 }
