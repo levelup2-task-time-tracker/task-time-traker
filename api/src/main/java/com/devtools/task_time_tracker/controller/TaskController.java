@@ -17,7 +17,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskModel> createProject(
+    public ResponseEntity<TaskModel> createTask(
             @RequestParam String description,
             @RequestParam String name,
             @RequestParam Integer storyPoints,
@@ -29,7 +29,7 @@ public class TaskController {
     }
 
     @PostMapping("/{taskId}")
-    public ResponseEntity<TaskModel> updateProject(
+    public ResponseEntity<TaskModel> updateTask(
             @PathVariable Long taskId,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String name,

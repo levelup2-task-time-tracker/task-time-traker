@@ -14,20 +14,21 @@ import java.util.List;
 
 @PermitAll
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @GetMapping("/users")
+    @GetMapping
     public ResponseEntity<String> getAllUsers(@AuthenticationPrincipal OAuth2User user) {
         System.out.println(user);
         return ResponseEntity.ok("Working");
     }
 
-    @GetMapping("/users/{user_id}")
+    @GetMapping("/{userId}")
     public ResponseEntity<String> getUser(@AuthenticationPrincipal OAuth2User user, @PathVariable String userId, @RequestParam String projectId) {
         // This will be user info, i.e. all projects they work on, all tasks, all time logs
-        return ResponseEntity.ok("Working");
+        return ResponseEntity.ok("User:" + userId + " Project: " + projectId);
     }
 }

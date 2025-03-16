@@ -43,7 +43,6 @@ public class OAuthController {
 
     @GetMapping("/auth/callback")
     public ResponseEntity<TokenDto> callback(@RequestParam("code") String code) throws URISyntaxException {
-        System.out.println("Callback");
         String token;
         try {
             token = new GoogleAuthorizationCodeTokenRequest(
