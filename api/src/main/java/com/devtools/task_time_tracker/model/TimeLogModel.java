@@ -18,12 +18,17 @@ public class TimeLogModel {
     @JoinColumn(name = "task_id")
     private TaskModel task;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserModel user;
+
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
 
     public TimeLogModel(){}
 
-    public TimeLogModel(TaskModel task, LocalDateTime startDateTime){
+    public TimeLogModel(UserModel user, TaskModel task, LocalDateTime startDateTime){
+        this.user = user;
         this.task = task;
         this.startDateTime = startDateTime;
         this.endDateTime = null;

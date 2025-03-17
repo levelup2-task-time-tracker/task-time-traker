@@ -13,6 +13,13 @@ public class UserModel {
     @Column(name = "user_id")
     private Long userId;
 
+    public UserModel(){}
+
+    public UserModel(Long userId, String subject){
+        this.userId = userId;
+        this.subject = subject;
+    }
+
     public Long getUserId() {
         return userId;
     }

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
 
@@ -26,15 +27,19 @@ public class TimeController {
             @AuthenticationPrincipal OAuth2User user,
             @PathVariable Long taskId
     ){
-        TimeLogModel timeLogModel = timeService.startTime(taskId);
+        try{
+            TimeLogModel timeLogModel = timeService.startTime(taskId);
 
-        Duration currentTimeSpent = timeService.getTotalTime(taskId);
-        long hours = currentTimeSpent.toHours();
-        long minutes = currentTimeSpent.toMinutesPart();
-        long seconds = currentTimeSpent.toSecondsPart();
+            Duration currentTimeSpent = timeService.getTotalTime(taskId);
+            long hours = currentTimeSpent.toHours();
+            long minutes = currentTimeSpent.toMinutesPart();
+            long seconds = currentTimeSpent.toSecondsPart();
 
-        String formattedTime = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-        return ResponseEntity.ok(formattedTime);
+            String formattedTime = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+            return ResponseEntity.ok(formattedTime);
+        }catch (ResponseStatusException e){
+            return ResponseEntity.ok(e.getLocalizedMessage());
+        }
     }
 
     @PostMapping("/{taskId}/stop")
@@ -42,13 +47,17 @@ public class TimeController {
             @AuthenticationPrincipal OAuth2User user,
             @PathVariable Long taskId
     ){
-        TimeLogModel timeLogModel = timeService.stopTime(taskId);
-        Duration currentTimeSpent = timeService.getTotalTime(taskId);
-        long hours = currentTimeSpent.toHours();
-        long minutes = currentTimeSpent.toMinutesPart();
-        long seconds = currentTimeSpent.toSecondsPart();
+        try{
+            TimeLogModel timeLogModel = timeService.stopTime(taskId);
+            Duration currentTimeSpent = timeService.getTotalTime(taskId);
+            long hours = currentTimeSpent.toHours();
+            long minutes = currentTimeSpent.toMinutesPart();
+            long seconds = currentTimeSpent.toSecondsPart();
 
-        String formattedTime = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-        return ResponseEntity.ok(formattedTime);
+            String formattedTime = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+            return ResponseEntity.ok(formattedTime);
+        }catch (ResponseStatusException e){
+            return ResponseEntity.ok(e.getLocalizedMessage());
+        }
     }
 }
