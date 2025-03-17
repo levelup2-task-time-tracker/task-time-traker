@@ -1,46 +1,54 @@
 package com.devtools.task_time_tracker.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "project")
 public class ProjectModel {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long projectId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID projectId;
+    private String name;
+
+    public UUID getProjectId() {
+        return projectId;
+    }
 
     public ProjectModel() {
     }
 
-    public ProjectModel(UserModel manager, String description) {
-        this.manager = manager;
-        this.description = description;
-    }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setManager(UserModel manager) {
-        this.manager = manager;
-    }
-
-    private String description;
-
-    public UserModel getManager() {
-        return manager;
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public Long getProjectId() {
-        return projectId;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "manager")
-    private UserModel manager;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public ProjectModel(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime deletedAt;
 }
