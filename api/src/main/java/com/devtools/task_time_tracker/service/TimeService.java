@@ -32,32 +32,34 @@ public class TimeService {
     @Autowired
     private UserRepository userRepository;
 
-    public TimeLogModel startTime(Long taskId){
-        //Check user logic
+    public TimeLogModel startTime(Long taskId) throws ResponseStatusException{
+        UserModel user = getLoggedInUser(userRepository);
 
         TaskModel task = taskRepository
                 .findById(taskId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
 
-        List<TimeLogModel> timeLogModelOptional = timeLogRepository.findByTaskAndEndDateTimeIsNull(task);
+        List<TimeLogModel> timeLogModelOptional = timeLogRepository.findByUserAndTaskAndEndDateTimeIsNull(user, task);
 
         if (timeLogModelOptional.isEmpty()) {
             LocalDateTime startTime = LocalDateTime.now();
-            TimeLogModel timeLogModel = new TimeLogModel(task, startTime);
+            TimeLogModel timeLogModel = new TimeLogModel(user, task, startTime);
             timeLogRepository.save(timeLogModel);
 
             return timeLogModel;
         }else{
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Already time log in progress for the given task");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "You are already logging time for the task");
         }
     }
 
-    public TimeLogModel stopTime(Long taskId){
+    public TimeLogModel stopTime(Long taskId) throws ResponseStatusException{
+        UserModel user = getLoggedInUser(userRepository);
+
         TaskModel task = taskRepository
                 .findById(taskId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
 
-        List<TimeLogModel> timeLogModelOptional = timeLogRepository.findByTaskAndEndDateTimeIsNull(task);
+        List<TimeLogModel> timeLogModelOptional = timeLogRepository.findByUserAndTaskAndEndDateTimeIsNull(user, task);
 
         if (timeLogModelOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No current log in progress for given task");
