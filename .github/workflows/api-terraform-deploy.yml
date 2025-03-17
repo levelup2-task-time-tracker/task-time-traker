@@ -2,9 +2,9 @@ name: Initialize and deploy Spring Boot server to EC2
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
 
 jobs:
   terraform:

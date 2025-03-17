@@ -87,8 +87,16 @@ resource "aws_instance" "task_time_tracker_instance" {
 
   subnet_id     = aws_subnet.task_time_tracker_subnet.id
   security_groups = [aws_security_group.task_time_tracker_sg.id]
-
   associate_public_ip_address = true
+
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo yum update -y
+              sudo yum install -y java-21-amazon-corretto-devel
+              java -version
+              mkdir -p /home/ec2-user/app
+              sudo chown -R ec2-user:ec2-user /home/ec2-user/app
+              EOF
 
   tags = {
     Name = "TaskTimeTrackerApplication"
@@ -98,4 +106,3 @@ resource "aws_instance" "task_time_tracker_instance" {
 output "instance_public_ip" {
   value = aws_instance.task_time_tracker_instance.public_ip
 }
-
