@@ -57,24 +57,13 @@ public class TimeLogModel {
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
 
-    public TimeLogModel(){}
+    public TimeLogModel() {
+    }
 
-    public TimeLogModel(UserModel user, TaskModel task, LocalDateTime startDateTime){
+    public TimeLogModel(UserModel user, TaskModel task, LocalDateTime startDateTime) {
         this.user = user;
         this.task = task;
         this.startDateTime = startDateTime;
         this.endDateTime = null;
-    }
-
-    public void setEndDateTime(LocalDateTime endDateTime) {
-        this.endDateTime = endDateTime;
-    }
-
-    public LocalDateTime getEndDateTime() {
-        return endDateTime;
-    }
-
-    public LocalDateTime getStartDateTime() {
-        return startDateTime;
     }
 }
