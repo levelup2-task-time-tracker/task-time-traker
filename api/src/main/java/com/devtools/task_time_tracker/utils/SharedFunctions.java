@@ -1,6 +1,9 @@
 package com.devtools.task_time_tracker.utils;
 
+import com.devtools.task_time_tracker.model.ProjectMemberModel;
+import com.devtools.task_time_tracker.model.ProjectModel;
 import com.devtools.task_time_tracker.model.UserModel;
+import com.devtools.task_time_tracker.repository.ProjectRepository;
 import com.devtools.task_time_tracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 public class SharedFunctions {
 
@@ -36,4 +40,15 @@ public class SharedFunctions {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid authentication principal");
         }
     }
+
+    public static ProjectModel findProject(UUID projectId, ProjectRepository projectRepository) throws ResponseStatusException{
+        Optional<ProjectModel> projectModelOptional = projectRepository.findById(projectId);
+
+        if (projectModelOptional.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found");
+        }
+
+        return projectModelOptional.get();
+    }
+
 }

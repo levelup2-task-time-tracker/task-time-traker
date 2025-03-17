@@ -1,20 +1,49 @@
 package com.devtools.task_time_tracker.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
-@Data
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Entity
 @Table(name = "task")
 public class TaskModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long taskId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID taskId;
 
     private String name;
-    private String description;
 
-    public TaskModel() {
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Long getStoryPoints() {
+        return storyPoints;
+    }
+
+    public void setStoryPoints(Long storyPoints) {
+        this.storyPoints = storyPoints;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public ProjectModel getProject() {
+        return project;
+    }
+
+    public void setProject(ProjectModel project) {
+        this.project = project;
     }
 
     public UserModel getUser() {
@@ -33,29 +62,16 @@ public class TaskModel {
         this.name = name;
     }
 
-    public Long getTaskId() {
+    public UUID getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(Long taskId) {
+    public void setTaskId(UUID taskId) {
         this.taskId = taskId;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public ProjectModel getProject() {
-        return project;
-    }
-
-    public void setProject(ProjectModel project) {
-        this.project = project;
-    }
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -64,4 +80,10 @@ public class TaskModel {
     @ManyToOne
     @JoinColumn(name = "project_id")
     private ProjectModel project;
+
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime deletedAt;
+
+    @Column(name = "story_points", columnDefinition = "TIMESTAMP")
+    private Long storyPoints;
 }
