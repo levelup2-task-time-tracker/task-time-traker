@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
@@ -21,7 +23,7 @@ public class TaskController {
             @RequestParam String description,
             @RequestParam String name,
             @RequestParam Integer storyPoints,
-            @RequestParam Long projectId
+            @RequestParam UUID projectId
     ) {
         TaskModel task = taskService.createTask(description, name, storyPoints, projectId);
 
@@ -30,11 +32,11 @@ public class TaskController {
 
     @PostMapping("/{taskId}")
     public ResponseEntity<TaskModel> updateTask(
-            @PathVariable Long taskId,
+            @PathVariable UUID taskId,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Integer storyPoints,
-            @RequestParam(required = false) Long projectId
+            @RequestParam(required = false) UUID projectId
     ) {
         TaskModel task = taskService.updateTask(taskId, description, name, storyPoints, projectId);
 
@@ -42,7 +44,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{taskId}")
-    public ResponseEntity<Boolean> deleteTask(@PathVariable Long taskId){
+    public ResponseEntity<Boolean> deleteTask(@PathVariable UUID taskId){
         return ResponseEntity.ok(taskService.deleteTask(taskId));
     }
 }
