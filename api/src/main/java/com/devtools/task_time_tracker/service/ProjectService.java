@@ -33,11 +33,11 @@ public class ProjectService {
 
 
     @Transactional
-    public ProjectModel createProject(String name, String description, Boolean isPrivate) throws ResponseStatusException{
+    public ProjectModel createProject(String name, String description) throws ResponseStatusException{
         UserModel user = getLoggedInUser(userRepository);
         UUID projectId = UUID.randomUUID();
 
-        ProjectModel project = new ProjectModel(name, description, isPrivate);
+        ProjectModel project = new ProjectModel(name, description);
         projectRepository.save(project);
 
         Optional<RoleModel> roleModelOptional = roleRepository.findByRoleName("Manager");
@@ -56,11 +56,7 @@ public class ProjectService {
         return projectRepository.findByUser(user.getUserId());
     }
 
-    public List<ProjectModel> getAllProjects() throws ResponseStatusException{
-        return projectRepository.findByIsPrivateFalse();
-    }
-
-    public ProjectModel updateProject(UUID projectId, String newDescription, String newName, Boolean isPrivate) throws ResponseStatusException{
+    public ProjectModel updateProject(UUID projectId, String newDescription, String newName) throws ResponseStatusException{
         UserModel user = getLoggedInUser(userRepository);
         ProjectModel project = findProject(projectId, projectRepository);
 
@@ -75,10 +71,6 @@ public class ProjectService {
 
         if (newName != null) {
             project.setName(newName);
-        }
-
-        if (isPrivate != null) {
-            project.setPrivate(isPrivate);
         }
 
         projectRepository.save(project);
@@ -99,13 +91,6 @@ public class ProjectService {
     public List<UserModel> getUsers(UUID projectId, String roles) throws ResponseStatusException{
         ProjectModel project = findProject(projectId, projectRepository);
         UserModel user = getLoggedInUser(userRepository);
-
-        if (project.isPrivate()){
-            Optional<ProjectMemberModel> projectMemberModel = projectMemberRepository.findByUserAndProject(user, project);
-            if (projectMemberModel.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized");
-            }
-        }
 
         return userRepository.findByUserRoleFilter(user.getUserId(), roles);
 

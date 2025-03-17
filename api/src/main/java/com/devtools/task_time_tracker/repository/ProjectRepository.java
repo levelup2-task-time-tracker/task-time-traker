@@ -10,7 +10,6 @@ import java.util.UUID;
 
 public interface ProjectRepository extends JpaRepository<ProjectModel, UUID> {
 
-    List<ProjectModel> findByIsPrivateFalse();
     @Query(value = "SELECT p.* FROM project p " +
             "JOIN project_member pm ON p.project_id = pm.project_id " +
             "WHERE pm.user_id = :userId", nativeQuery = true)

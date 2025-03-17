@@ -21,14 +21,6 @@ public class ProjectModel {
     public ProjectModel() {
     }
 
-    public boolean isPrivate() {
-        return isPrivate;
-    }
-
-    public void setPrivate(boolean aPrivate) {
-        isPrivate = aPrivate;
-    }
-
 
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
@@ -50,8 +42,7 @@ public class ProjectModel {
         this.name = name;
     }
 
-    public ProjectModel(String name, String description, Boolean isPrivate) {
-        this.isPrivate = isPrivate;
+    public ProjectModel(String name, String description) {
         this.name = name;
         this.description = description;
     }
@@ -60,6 +51,4 @@ public class ProjectModel {
     private String description;
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
-    @Column(name = "is_private")
-    private boolean isPrivate;
 }

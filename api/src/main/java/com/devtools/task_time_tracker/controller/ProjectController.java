@@ -22,10 +22,9 @@ public class ProjectController {
     @PostMapping
     public ResponseEntity<ProjectModel> createProject(
             @RequestParam String description,
-            @RequestParam String name,
-            @RequestParam(required = false, defaultValue = "false") boolean isPrivate
+            @RequestParam String name
     ) {
-        ProjectModel project = projectService.createProject(name, description, isPrivate);
+        ProjectModel project = projectService.createProject(name, description);
         return ResponseEntity.ok(project);
     }
 
@@ -36,12 +35,6 @@ public class ProjectController {
         return ResponseEntity.ok(projects);
     }
 
-    @GetMapping("/public")
-    public ResponseEntity<List<ProjectModel>> getAllProjects() {
-        List<ProjectModel> projects = projectService.getAllProjects();
-        return ResponseEntity.ok(projects);
-    }
-
     @PostMapping("/{projectId}")
     public ResponseEntity<ProjectModel> updateProject(
             @PathVariable UUID projectId,
@@ -49,7 +42,7 @@ public class ProjectController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Boolean isPrivate
     ) {
-        ProjectModel project = projectService.updateProject(projectId, description, name, isPrivate);
+        ProjectModel project = projectService.updateProject(projectId, description, name);
         return ResponseEntity.ok(project);
     }
 
