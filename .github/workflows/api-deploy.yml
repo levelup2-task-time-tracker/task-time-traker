@@ -2,9 +2,9 @@ name: Deploy Spring Boot to EC2
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main 
+  push:
+    branches:
+      - main 
 
 jobs:
   build_and_deploy:
@@ -21,31 +21,31 @@ jobs:
           distribution: 'corretto'
           java-version: '21'
 
-
       - name: Build Spring Boot app
         run: |
             cd api
-            mvn clean package -DskipTests
-           
-      - name: Copy JAR to EC2 instance
-        uses: appleboy/ssh-action@v0.1.6
-        with:
-          host: ${{ secrets.EC2_PUBLIC_IP }}
-          username: ec2-user
-          key: ${{ secrets.EC2_SSH_KEY }} 
-          port: 22
-          source: "api/target/*.jar"
-          target: "/home/ec2-user"
+            mvn clean package -DskipTests 
+
+      - name: EC2 Private Key from GitHub Secrets 
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > private-key.pem
+          chmod 400 private-key.pem
+
+      - name: Upload .jar file to EC2 using SCP
+        run: |
+          echo "Uploading JAR to EC2 file using SCP"
+          scp -i private-key.pem -o StrictHostKeyChecking=no api/target/*.jar ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/app/     
 
       - name: Run Spring Boot Application
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_PUBLIC_IP }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            cd /home/ec2-user
-            nohup java -jar *.jar > springboot-app.log 2>&1 &
+            cd /home/ec2-user/app
+            chmod +x *.jar
+            nohup java -jar *.jar > /home/ec2-user/app/springboot-app.log 2>&1 &
 
-     
+  
