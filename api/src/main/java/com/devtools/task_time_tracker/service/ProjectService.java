@@ -11,8 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.devtools.task_time_tracker.utils.SharedFunctions.findProject;
-import static com.devtools.task_time_tracker.utils.SharedFunctions.getLoggedInUser;
+import static com.devtools.task_time_tracker.utils.SharedFunctions.*;
 
 @Service
 public class ProjectService {
@@ -39,13 +38,9 @@ public class ProjectService {
 
         ProjectModel project = new ProjectModel(name, description);
         projectRepository.save(project);
+        RoleModel role = findRole("Manager", roleRepository);
 
-        Optional<RoleModel> roleModelOptional = roleRepository.findByRoleName("Manager");
-        if (roleModelOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role manager not found");
-        }
-
-        ProjectMemberModel projectMemberModel = new ProjectMemberModel(project, user, roleModelOptional.get());
+        ProjectMemberModel projectMemberModel = new ProjectMemberModel(project, user, role);
         projectMemberRepository.save(projectMemberModel);
 
         return project;
@@ -59,11 +54,7 @@ public class ProjectService {
     public ProjectModel updateProject(UUID projectId, String newDescription, String newName) throws ResponseStatusException{
         UserModel user = getLoggedInUser(userRepository);
         ProjectModel project = findProject(projectId, projectRepository);
-
-        Optional<ProjectMemberModel> projectMember = projectMemberRepository.findByUserAndProject(user,project);
-        if (projectMember.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized");
-        }
+        verifyManager(user, project);
 
         if (newDescription != null) {
             project.setDescription(newDescription);
@@ -101,10 +92,7 @@ public class ProjectService {
     public Boolean deleteProject(UUID projectId) throws ResponseStatusException{
         ProjectModel project = findProject(projectId, projectRepository);
         UserModel user = getLoggedInUser(userRepository);
-        Optional<ProjectMemberModel> projectMember = projectMemberRepository.findByUserAndProject(user,project);
-        if (projectMember.isEmpty() || !projectMember.get().getRole().getRoleName().equals("Manger")){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized");
-        }
+        verifyManager(user, project);
         LocalDateTime currentDateTime = LocalDateTime.now();
         project.setDeletedAt(currentDateTime);
         projectRepository.save(project);
@@ -114,28 +102,55 @@ public class ProjectService {
     public Boolean restoreProject(UUID projectId) throws ResponseStatusException{
         ProjectModel project = findProject(projectId, projectRepository);
         UserModel user = getLoggedInUser(userRepository);
-        Optional<ProjectMemberModel> projectMember = projectMemberRepository.findByUserAndProject(user,project);
-        if (projectMember.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized");
-        }
+        verifyManager(user, project);
         project.setDeletedAt(null);
         projectRepository.save(project);
         return true;
     }
 
-    public Boolean addMember(UUID projectId, UUID userId, String role) {
+    public Boolean addMember(UUID projectId, UUID userId, String role) throws ResponseStatusException{
+        UserModel user = getLoggedInUser(userRepository);
+        ProjectModel project = findProject(projectId, projectRepository);
+        verifyManager(user, project);
+        UserModel userToAdd = findUser(userId, userRepository);
+        RoleModel userRole = findRole(role, roleRepository);
+        ProjectMemberModel projectMember = new ProjectMemberModel(project, userToAdd, userRole);
+        projectMemberRepository.save(projectMember);
+
         return true;
     }
 
-    public Boolean removeMember(UUID projectId, UUID userId) {
-        return  true;
-    }
+    public Boolean removeMember(UUID projectId, UUID userId) throws ResponseStatusException{
+        UserModel user = getLoggedInUser(userRepository);
+        ProjectModel project = findProject(projectId, projectRepository);
+        verifyManager(user, project);
+        UserModel userToRemove = findUser(userId, userRepository);
+        projectMemberRepository.deleteByUserAndProject(userToRemove, project);
 
-    public Boolean addRoleToMember(UUID projectId, UUID userId, String roleName) {
         return true;
     }
 
-    public Boolean removeRoleFromMember(UUID projectId, UUID userId) {
+    public Boolean changeUserRole(UUID projectId, UUID userId, String role) throws ResponseStatusException {
+        UserModel user = getLoggedInUser(userRepository);
+        ProjectModel project = findProject(projectId, projectRepository);
+        verifyManager(user, project);
+        UserModel userToUpdate = findUser(userId, userRepository);
+        RoleModel userRole = findRole(role, roleRepository);
+        Optional<ProjectMemberModel> projectMember = projectMemberRepository.findByUserAndProject(userToUpdate, project);
+        if (projectMember.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not part of project");
+        }
+        projectMember.get().setRole(userRole);
         return true;
     }
+
+    private  void verifyManager(UserModel user, ProjectModel project) throws  ResponseStatusException{
+        RoleModel role = findRole("Manager", roleRepository);
+        Optional<ProjectMemberModel> projectMemberModel = projectMemberRepository.findByUserAndProjectAndRole(user, project, role);
+        if (projectMemberModel.isEmpty()){
+            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not the manager of the project");
+        }
+
+    }
+
 }
