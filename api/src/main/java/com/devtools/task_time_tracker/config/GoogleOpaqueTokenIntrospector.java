@@ -1,20 +1,29 @@
 package com.devtools.task_time_tracker.config;
 
 import com.devtools.task_time_tracker.dts.UserInfo;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import com.devtools.task_time_tracker.model.UserModel;
+import com.devtools.task_time_tracker.repository.ProjectMemberRepository;
+import com.devtools.task_time_tracker.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 public class GoogleOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
     private final WebClient userInfoClient;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ProjectMemberRepository projectMemberRepository;
+
 
     public GoogleOpaqueTokenIntrospector(WebClient userInfoClient){
         this.userInfoClient = userInfoClient;
@@ -30,9 +39,23 @@ public class GoogleOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
                 .retrieve()
                 .bodyToMono(UserInfo.class)
                 .block();
+
+        assert userInfo != null;
+        Optional<UserModel> userModelOptional = userRepository.findBySubject(userInfo.sub());
+        UserModel user;
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        if (userModelOptional.isEmpty()) {
+            user = new UserModel();
+            user.setSubject(userInfo.sub());
+            user.setName(userInfo.name());
+            userRepository.save(user);
+
+        }
+
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("sub", userInfo.sub());
         attributes.put("name", userInfo.name());
-        return new OAuth2IntrospectionAuthenticatedPrincipal(userInfo.name(), attributes, null);
+
+        return new OAuth2IntrospectionAuthenticatedPrincipal(userInfo.name(), attributes, authorities);
     }
 }
