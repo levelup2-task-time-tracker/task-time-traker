@@ -1,5 +1,7 @@
-package com.devtools.task_time_tracker.model;
+package com.devtools.task_time_tracker.ModelTests;
 
+import com.devtools.task_time_tracker.model.TaskModel;
+import com.devtools.task_time_tracker.model.TimeLogModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,16 +18,17 @@ public class TimeLogModelTest {
     private LocalDateTime endDateTime;
 
     @BeforeEach
-           task = new TaskModel();
+    void setUp(){
+        task = new TaskModel();
         startDateTime = LocalDateTime.now();
         endDateTime = LocalDateTime.now().plusHours(1);
-        timeLog = new TimeLogModel(task, startDateTime);
+//        timeLog = new TimeLogModel(task, startDateTime);
         timeLog.setEndDateTime(endDateTime);
     }
 
     @Test
     void testConstructor() {
-        TimeLogModel newTimeLog = new TimeLogModel(task, startDateTime);
+        TimeLogModel newTimeLog = new TimeLogModel();
         assertNotNull(newTimeLog);
         assertEquals(task, newTimeLog.getTask());
         assertEquals(startDateTime, newTimeLog.getStartDateTime());

@@ -1,5 +1,6 @@
-package com.devtools.task_time_tracker.model;
+package com.devtools.task_time_tracker.ModelTests;
 
+import com.devtools.task_time_tracker.model.UserModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +17,6 @@ public class UserModelTest {
     @BeforeEach
     void setUp() {
         userId = UUID.randomUUID();
-        user =Id);
     }
 
     @Test
@@ -34,18 +34,5 @@ public class UserModelTest {
 
         assertEquals(userId, user.getUserId());
         assertEquals("Updated Name", user.getName());
-       `
-
-### Explanation
-- **Annotations:**
-  - `@BeforeEach`: Sets up the test environment before each test method.
-  - `@Test`: Identifies a method as a test method.
-
-- **Test Methods:**
-  - `testConstructor()`: Tests the constructor of `UserModel`.
-  - `testSettersAndGetters()`: Tests the setters and getters of `UserModel`.
-
-### Running the Test
-You can run your tests using your IDE or by running the following command in your terminal:
-```sh
-mvn test
+    }
+}

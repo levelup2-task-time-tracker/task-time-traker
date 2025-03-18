@@ -1,5 +1,6 @@
-package com.devtools.task_time_tracker.model;
+package com.devtools.task_time_tracker.ModelTests;
 
+import com.devtools.task_time_tracker.model.RoleModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
