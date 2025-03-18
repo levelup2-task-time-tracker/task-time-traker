@@ -29,5 +29,4 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, UUID> {
 
     @Query(value = "SELECT get_project_avg_seconds_per_completed_story_point(:projectId)", nativeQuery = true)
     double getProjectAverageTimeInSecondsPerCompletedStoryPoints(@Param("projectId") UUID projectId);
-
 }

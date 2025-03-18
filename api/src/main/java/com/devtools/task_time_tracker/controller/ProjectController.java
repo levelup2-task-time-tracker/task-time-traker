@@ -30,7 +30,6 @@ public class ProjectController {
         return ResponseEntity.ok(project);
     }
 
-
     @GetMapping
     public ResponseEntity<List<ProjectModel>> getUserProjects() {
         List<ProjectModel> projects = projectService.getUserProjects();
@@ -87,22 +86,15 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.removeMember(projectId, userId));
     }
 
-    @PostMapping("/{projectId}/add_role/{userId}")
-    public ResponseEntity<Boolean> addRoleToMember(
+    @PostMapping("/{projectId}/change_role/{userId}")
+    public ResponseEntity<Boolean> changeRole(
             @PathVariable UUID projectId,
             @PathVariable UUID userId,
-            @RequestParam String roleName
+            @RequestParam(required = false, defaultValue = "Contributor") String role
     ) {
-        return ResponseEntity.ok(projectService.addRoleToMember(projectId, userId, roleName));
+        return ResponseEntity.ok(projectService.changeUserRole(projectId, userId, role));
     }
 
-    @DeleteMapping("/{projectId}/remove_role/{userId}")
-    public ResponseEntity<Boolean> removeRoleFromMember(
-            @PathVariable UUID projectId,
-            @PathVariable UUID userId
-    ) {
-        return ResponseEntity.ok(projectService.removeRoleFromMember(projectId, userId));
-    }
 
     @GetMapping("/{projectId}/time")
     public ResponseEntity<HashMap<String, Long>> getTotalProjectTime(@PathVariable UUID projectId) {

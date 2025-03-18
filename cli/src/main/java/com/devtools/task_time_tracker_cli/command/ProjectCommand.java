@@ -20,12 +20,13 @@ public class ProjectCommand {
     private ApiService api;
 
     @ShellMethod(key = "create-project", value = "Create a new project")
-    public String createProject(String description){
+    public String createProject(String name, String description){
         if(api.authenticate()){
             return "You must login first.";
         }else{
             var params = new HashMap<String, Object>();
             params.put("description", description);
+            params.put("name", name);
             ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"projects", params);
             return response.getBody();
         }

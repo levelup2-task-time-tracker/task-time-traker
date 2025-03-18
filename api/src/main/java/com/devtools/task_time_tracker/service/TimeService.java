@@ -17,6 +17,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.devtools.task_time_tracker.utils.SharedFunctions.getLoggedInUser;
 
@@ -32,7 +33,7 @@ public class TimeService {
     @Autowired
     private UserRepository userRepository;
 
-    public TimeLogModel startTime(Long taskId) throws ResponseStatusException{
+    public TimeLogModel startTime(UUID taskId) throws ResponseStatusException{
         UserModel user = getLoggedInUser(userRepository);
 
         TaskModel task = taskRepository
@@ -52,7 +53,7 @@ public class TimeService {
         }
     }
 
-    public TimeLogModel stopTime(Long taskId) throws ResponseStatusException{
+    public TimeLogModel stopTime(UUID taskId) throws ResponseStatusException{
         UserModel user = getLoggedInUser(userRepository);
 
         TaskModel task = taskRepository
@@ -73,7 +74,7 @@ public class TimeService {
         }
     }
 
-    public Duration getTotalTime(Long taskId){
+    public Duration getTotalTime(UUID taskId){
         TaskModel task = taskRepository
                 .findById(taskId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
