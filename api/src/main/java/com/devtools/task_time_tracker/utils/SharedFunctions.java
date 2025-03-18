@@ -2,8 +2,10 @@ package com.devtools.task_time_tracker.utils;
 
 import com.devtools.task_time_tracker.model.ProjectMemberModel;
 import com.devtools.task_time_tracker.model.ProjectModel;
+import com.devtools.task_time_tracker.model.RoleModel;
 import com.devtools.task_time_tracker.model.UserModel;
 import com.devtools.task_time_tracker.repository.ProjectRepository;
+import com.devtools.task_time_tracker.repository.RoleRepository;
 import com.devtools.task_time_tracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,6 +51,24 @@ public class SharedFunctions {
         }
 
         return projectModelOptional.get();
+    }
+
+    public static UserModel findUser(UUID userId, UserRepository userRepository) throws ResponseStatusException{
+        Optional<UserModel> userModelOptional= userRepository.findById(userId);
+
+        if (userModelOptional.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        return userModelOptional.get();
+    }
+
+    public static RoleModel findRole(String roleName, RoleRepository roleRepository) throws ResponseStatusException{
+        Optional<RoleModel> roleModelOptional = roleRepository.findByRoleName(roleName);
+        if (roleModelOptional.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found");
+        }
+        return roleModelOptional.get();
     }
 
 }

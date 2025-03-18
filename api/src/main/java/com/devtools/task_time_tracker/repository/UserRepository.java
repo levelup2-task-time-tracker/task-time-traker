@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UserRepository extends JpaRepository<UserModel, Long> {
+public interface UserRepository extends JpaRepository<UserModel, UUID> {
     Optional<UserModel> findBySubject(String subject);
     @Query(value = "SELECT u.* FROM app_user u " +
             "JOIN project_member pm ON u.user_id = pm.user_id " +
