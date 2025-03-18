@@ -54,13 +54,13 @@ public class ProjectCommand {
     }
 
     @ShellMethod(key = "update-project", value = "Update a specific project")
-    public String updateProject(String projectId, String description, String newManager){
+    public String updateProject(String projectId, String description, String name){
         if(api.authenticate()){
             return "You must login first.";
         }else{
             var params = new HashMap<String, Object>();
             params.put("description", description);
-            params.put("newManagerSubject", newManager);
+            params.put("name", name);
             ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"projects/" + projectId, params);
             return response.getBody();
         }
@@ -182,6 +182,18 @@ public class ProjectCommand {
             return "You must login first.";
         }else{
             ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/time/avg_per_completed_point", new HashMap<>());
+            return response.getBody();
+        }
+    }
+
+    @ShellMethod(key = "workload-suggestions", value = "Get workload suggestions")
+    public String updateTask(String projectId){
+        if(api.authenticate()){
+            return "You must login first.";
+        }else{
+            var params = new HashMap<String, Object>();
+            params.put("name", projectId);
+            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"projects/" + projectId, params);
             return response.getBody();
         }
     }
