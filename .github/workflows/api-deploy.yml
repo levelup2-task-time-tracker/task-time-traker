@@ -38,12 +38,6 @@ jobs:
 
       - name: Run Spring Boot Application
         uses: appleboy/ssh-action@v0.1.10
-        env:
-          DB_URL: ${{ secrets.DB_URL }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          OAUTH2_ID: ${{ secrets.OAUTH2_ID }}
-          OAUTH2_SECRET: ${{ secrets.OAUTH2_SECRET }}
         with:
           host: ${{ secrets.EC2_PUBLIC_IP }}
           username: ec2-user
@@ -53,5 +47,11 @@ jobs:
             cd /home/ec2-user/app
             chmod +x *.jar
             nohup java -jar *.jar > /home/ec2-user/app/springboot-app.log 2>&1 &
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          OAUTH2_ID: ${{ secrets.OAUTH2_ID }}
+          OAUTH2_SECRET: ${{ secrets.OAUTH2_SECRET }}
 
   
