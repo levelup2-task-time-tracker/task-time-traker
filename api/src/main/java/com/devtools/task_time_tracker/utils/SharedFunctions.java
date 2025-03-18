@@ -4,6 +4,7 @@ import com.devtools.task_time_tracker.model.ProjectMemberModel;
 import com.devtools.task_time_tracker.model.ProjectModel;
 import com.devtools.task_time_tracker.model.RoleModel;
 import com.devtools.task_time_tracker.model.UserModel;
+import com.devtools.task_time_tracker.repository.ProjectMemberRepository;
 import com.devtools.task_time_tracker.repository.ProjectRepository;
 import com.devtools.task_time_tracker.repository.RoleRepository;
 import com.devtools.task_time_tracker.repository.UserRepository;
@@ -69,6 +70,14 @@ public class SharedFunctions {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found");
         }
         return roleModelOptional.get();
+    }
+
+    public static  void verifyUser(UserModel user, ProjectModel project, ProjectMemberRepository projectMemberRepository) throws  ResponseStatusException{
+        Optional<ProjectMemberModel> projectMemberModel = projectMemberRepository.findByUserAndProject(user, project);
+        if (projectMemberModel.isEmpty()){
+            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not part of the project.");
+        }
+
     }
 
 }

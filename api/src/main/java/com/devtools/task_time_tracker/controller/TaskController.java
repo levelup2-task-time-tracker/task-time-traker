@@ -46,10 +46,10 @@ public class TaskController {
             @PathVariable UUID taskId,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) Integer storyPoints,
+            @RequestParam(required = false) Long storyPoints,
             @RequestParam(required = false) UUID projectId
     ) {
-        TaskModel task = taskService.updateTask(taskId, description, name, storyPoints, projectId);
+        TaskModel task = taskService.updateTask(taskId, description, name, storyPoints);
 
         return ResponseEntity.ok(task);
     }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,12 @@ public class ProjectController {
     public ResponseEntity<List<ProjectModel>> getUserProjects() {
         List<ProjectModel> projects = projectService.getUserProjects();
         return ResponseEntity.ok(projects);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<ProjectModel>> getProjects() {
+        List<ProjectModel> tasks = projectService.getAll();
+        return ResponseEntity.ok(tasks);
     }
 
     @PostMapping("/{projectId}")
@@ -62,11 +69,6 @@ public class ProjectController {
     @DeleteMapping("/{projectId}")
     public ResponseEntity<Boolean> deleteProject(@PathVariable UUID projectId){
         return ResponseEntity.ok(projectService.deleteProject(projectId));
-    }
-
-    @PostMapping("/{projectId}/restore")
-    public ResponseEntity<Boolean> restoreProject(@PathVariable UUID projectId){
-        return ResponseEntity.ok(projectService.restoreProject(projectId));
     }
 
     @PostMapping("/{projectId}/add_member/{userId}")

@@ -21,9 +21,8 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<String> getAllUsers(@AuthenticationPrincipal OAuth2User user) {
-        System.out.println(user);
-        return ResponseEntity.ok("Working");
+    public ResponseEntity<List<UserModel>> getAllUsers(@AuthenticationPrincipal OAuth2User user) {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{userId}")
