@@ -4,9 +4,7 @@ import com.devtools.task_time_tracker.model.ProjectModel;
 import com.devtools.task_time_tracker.model.TaskModel;
 import com.devtools.task_time_tracker.model.TimeLogModel;
 import com.devtools.task_time_tracker.model.UserModel;
-import com.devtools.task_time_tracker.repository.TaskRepository;
-import com.devtools.task_time_tracker.repository.TimeLogRepository;
-import com.devtools.task_time_tracker.repository.UserRepository;
+import com.devtools.task_time_tracker.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.devtools.task_time_tracker.utils.SharedFunctions.getLoggedInUser;
+import static com.devtools.task_time_tracker.utils.SharedFunctions.*;
 
 @Service
 public class TimeService {
@@ -33,8 +31,15 @@ public class TimeService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProjectMemberRepository projectMemberRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
     public TimeLogModel startTime(UUID taskId) throws ResponseStatusException{
         UserModel user = getLoggedInUser(userRepository);
+        verifyUserTask(taskId, user);
 
         TaskModel task = taskRepository
                 .findById(taskId)
@@ -55,10 +60,7 @@ public class TimeService {
 
     public TimeLogModel stopTime(UUID taskId) throws ResponseStatusException{
         UserModel user = getLoggedInUser(userRepository);
-
-        TaskModel task = taskRepository
-                .findById(taskId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
+        TaskModel task = verifyUserTask(taskId, user);
 
         List<TimeLogModel> timeLogModelOptional = timeLogRepository.findByUserAndTaskAndEndDateTimeIsNull(user, task);
 
@@ -74,10 +76,8 @@ public class TimeService {
         }
     }
 
-    public Duration getTotalTime(UUID taskId){
-        TaskModel task = taskRepository
-                .findById(taskId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found"));
+    public Duration getTotalTime(UUID taskId) throws RuntimeException{
+        TaskModel task = verifyUserTask(taskId, null);
 
         List<TimeLogModel> timeLog = timeLogRepository.findByTask(task);
 
@@ -88,4 +88,20 @@ public class TimeService {
 
         return totalDuration;
     }
+
+    private TaskModel verifyUserTask(UUID taskId, UserModel user) throws RuntimeException {
+        if (user == null) {
+            user = getLoggedInUser(userRepository);
+        }
+        Optional<TaskModel> taskModelOptional = taskRepository.findById(taskId);
+        if (taskModelOptional.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
+        }
+        TaskModel task = taskModelOptional.get();
+        ProjectModel project = findProject(task.getProject().getProjectId(), projectRepository);
+        verifyUser(user, project, projectMemberRepository);
+
+        return task;
+    }
+
 }

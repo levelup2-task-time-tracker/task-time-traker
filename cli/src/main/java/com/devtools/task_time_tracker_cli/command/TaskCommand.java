@@ -31,7 +31,7 @@ public class TaskCommand {
     }
 
     @ShellMethod(key = "update-task", value = "Update a task")
-    public String updateTask(String taskId, String name, String description, String points, String projectId){
+    public String updateTask(String taskId, String name, String description, String points){
         if(api.authenticate()){
             return "You must login first.";
         }else{
@@ -39,7 +39,6 @@ public class TaskCommand {
             params.put("name", name);
             params.put("description", description);
             params.put("storyPoints", points);
-            params.put("projectId", projectId);
             ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"tasks/" + taskId, params);
             return response.getBody();
         }

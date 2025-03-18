@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.devtools.task_time_tracker.utils.SharedFunctions.*;
@@ -93,20 +92,10 @@ public class ProjectService {
         ProjectModel project = findProject(projectId, projectRepository);
         UserModel user = getLoggedInUser(userRepository);
         verifyManager(user, project);
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        project.setDeletedAt(currentDateTime);
-        projectRepository.save(project);
+        projectRepository.delete(project);
         return true;
     }
 
-    public Boolean restoreProject(UUID projectId) throws ResponseStatusException{
-        ProjectModel project = findProject(projectId, projectRepository);
-        UserModel user = getLoggedInUser(userRepository);
-        verifyManager(user, project);
-        project.setDeletedAt(null);
-        projectRepository.save(project);
-        return true;
-    }
 
     public Boolean addMember(UUID projectId, UUID userId, String role) throws ResponseStatusException{
         UserModel user = getLoggedInUser(userRepository);
@@ -153,7 +142,8 @@ public class ProjectService {
 
     }
 
-  public HashMap<String, Long> getTotalProjectTime(UUID projectId) {
+  public HashMap<String, Long> getTotalProjectTime(UUID projectId) throws ResponseStatusException {
+        verifyUserProject(projectId);
         long totalProjectTimeInSeconds = projectRepository.getTotalProjectTimeInSeconds(projectId);
 
         return formatDurationToWorkingDaysHours(Duration.ofSeconds(totalProjectTimeInSeconds));
@@ -169,7 +159,8 @@ public class ProjectService {
         return durationMap;
     }
 
-    public HashMap<String, HashMap<String, Long>> getProjectMembersTime(UUID projectId) {
+    public HashMap<String, HashMap<String, Long>> getProjectMembersTime(UUID projectId) throws ResponseStatusException {
+        verifyUserProject(projectId);
         List<Object[]> results = projectRepository.getProjectMembersTimeInSeconds(projectId);
 
         HashMap<String, HashMap<String, Long>> projectMembersTimeMap = new HashMap<>();
@@ -188,7 +179,8 @@ public class ProjectService {
         return projectMembersTimeMap;
     }
 
-    public HashMap<String, HashMap<String, Long>> getProjectTasksTime(UUID projectId) {
+    public HashMap<String, HashMap<String, Long>> getProjectTasksTime(UUID projectId) throws ResponseStatusException {
+        verifyUserProject(projectId);
         List<Object[]> results = projectRepository.getProjectTasksTimeInSeconds(projectId);
 
         HashMap<String, HashMap<String, Long>> projectTasksTimeMap = new HashMap<>();
@@ -207,11 +199,23 @@ public class ProjectService {
         return projectTasksTimeMap;
     }
 
-    public int getProjectTotalStoryPoints(UUID projectId, boolean completedOnly) {
+    public int getProjectTotalStoryPoints(UUID projectId, boolean completedOnly) throws ResponseStatusException {
+        verifyUserProject(projectId);
         return projectRepository.getProjectTotalStoryPoints(projectId, completedOnly);
     }
 
-    public HashMap<String, Long> getProjectAverageTimePerCompletedStoryPoints(UUID projectId) {
+    public HashMap<String, Long> getProjectAverageTimePerCompletedStoryPoints(UUID projectId) throws ResponseStatusException {
+        verifyUserProject(projectId);
         return formatDurationToWorkingDaysHours(Duration.ofSeconds((long)projectRepository.getProjectAverageTimeInSecondsPerCompletedStoryPoints(projectId)));
+    }
+
+    private void verifyUserProject(UUID projectId) throws ResponseStatusException {
+        UserModel user = getLoggedInUser(userRepository);
+        ProjectModel project = findProject(projectId, projectRepository);
+        verifyUser(user,project, projectMemberRepository);
+    }
+
+    public List<ProjectModel> getAll() {
+        return projectRepository.findAll();
     }
 }
