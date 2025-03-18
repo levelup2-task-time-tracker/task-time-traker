@@ -192,8 +192,31 @@ public class ProjectCommand {
             return "You must login first.";
         }else{
             var params = new HashMap<String, Object>();
-            params.put("name", projectId);
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"projects/" + projectId, params);
+            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/suggestions" + projectId, params);
+            return response.getBody();
+        }
+    }
+
+    @ShellMethod(key = "add-member", value = "Add member to project")
+    public String addMember(String userId, String projectId){
+        if(api.authenticate()){
+            return "You must login first.";
+        }else{
+            var params = new HashMap<String, Object>();
+            params.put("userId", userId);
+            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"projects/add_member" + projectId, params);
+            return response.getBody();
+        }
+    }
+
+    @ShellMethod(key = "remove-member", value = "Remove member to project")
+    public String removeMember(String userId, String projectId){
+        if(api.authenticate()){
+            return "You must login first.";
+        }else{
+            var params = new HashMap<String, Object>();
+            params.put("userId", userId);
+            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"projects/remove_member" + projectId, params);
             return response.getBody();
         }
     }
