@@ -2,12 +2,12 @@ package com.devtools.task_time_tracker.service;
 import com.devtools.task_time_tracker.model.*;
 import com.devtools.task_time_tracker.repository.*;
 import jakarta.transaction.Transactional;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -137,5 +137,67 @@ public class ProjectService {
 
     public Boolean removeRoleFromMember(UUID projectId, UUID userId) {
         return true;
+    }
+
+    public HashMap<String, Long> getTotalProjectTime(UUID projectId) {
+        long totalProjectTimeInSeconds = projectRepository.getTotalProjectTimeInSeconds(projectId);
+
+        return formatDurationToWorkingDaysHours(Duration.ofSeconds(totalProjectTimeInSeconds));
+    }
+
+    public static HashMap<String, Long> formatDurationToWorkingDaysHours(Duration duration) {
+
+        HashMap<String, Long> durationMap = new HashMap<>();
+
+        durationMap.put("days", duration.toHours() / 8);
+        durationMap.put("hours", duration.toMinutes() % 60 == 0 ? duration.toHours() % 8 : duration.toHours() % 8 + 1);
+
+        return durationMap;
+    }
+
+    public HashMap<String, HashMap<String, Long>> getProjectMembersTime(UUID projectId) {
+        List<Object[]> results = projectRepository.getProjectMembersTimeInSeconds(projectId);
+
+        HashMap<String, HashMap<String, Long>> projectMembersTimeMap = new HashMap<>();
+
+        for (Object[] result : results) {
+            String rowString = result[0].toString();
+
+            rowString = rowString.substring(1, rowString.length() - 1);
+
+            String[] dataInRow = rowString.split(",");
+
+            HashMap<String, Long> workingDaysHoursMap = formatDurationToWorkingDaysHours(Duration.ofSeconds((long) Double.parseDouble(dataInRow[2]))); // Assuming total_seconds is at index 2
+            projectMembersTimeMap.put(dataInRow[1].replaceAll("\"", ""), workingDaysHoursMap);
+        }
+
+        return projectMembersTimeMap;
+    }
+
+    public HashMap<String, HashMap<String, Long>> getProjectTasksTime(UUID projectId) {
+        List<Object[]> results = projectRepository.getProjectTasksTimeInSeconds(projectId);
+
+        HashMap<String, HashMap<String, Long>> projectTasksTimeMap = new HashMap<>();
+
+        for (Object[] result : results) {
+            String rowString = result[0].toString();
+
+            rowString = rowString.substring(1, rowString.length() - 1);
+
+            String[] dataInRow = rowString.split(",");
+
+            HashMap<String, Long> workingDaysHoursMap = formatDurationToWorkingDaysHours(Duration.ofSeconds((long) Double.parseDouble(dataInRow[2]))); // Assuming total_seconds is at index 2
+            projectTasksTimeMap.put(dataInRow[1].replaceAll("\"", ""), workingDaysHoursMap);
+        }
+
+        return projectTasksTimeMap;
+    }
+
+    public int getProjectTotalStoryPoints(UUID projectId, boolean completedOnly) {
+        return projectRepository.getProjectTotalStoryPoints(projectId, completedOnly);
+    }
+
+    public HashMap<String, Long> getProjectAverageTimePerCompletedStoryPoints(UUID projectId) {
+        return formatDurationToWorkingDaysHours(Duration.ofSeconds((long)projectRepository.getProjectAverageTimeInSecondsPerCompletedStoryPoints(projectId)));
     }
 }
