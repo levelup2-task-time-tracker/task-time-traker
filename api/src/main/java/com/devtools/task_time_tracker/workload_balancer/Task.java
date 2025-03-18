@@ -5,11 +5,11 @@ import java.util.UUID;
 public class Task {
     private final UUID taskId;
     private final String taskName;
-    private final Long storyPoints;
+    private final Double   estimatedRemainingTime;
 
-    public Task(UUID taskId, Long estimatedTime, String taskName) {
+    public Task(UUID taskId, Double  estimatedRemainingTime, String taskName) {
         this.taskId = taskId;
-        this.storyPoints = estimatedTime;
+        this.  estimatedRemainingTime =  estimatedRemainingTime;
         this.taskName = taskName;
     }
 
@@ -21,7 +21,7 @@ public class Task {
         return taskName;
     }
 
-    public Long getStoryPoints() {
-        return storyPoints;
+    public Double getEstimatedRemainingTime() {
+        return   estimatedRemainingTime;
     }
 }

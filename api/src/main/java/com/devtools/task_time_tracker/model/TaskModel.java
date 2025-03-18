@@ -46,12 +46,12 @@ public class TaskModel {
         this.project = project;
     }
 
-    public UserModel getUser() {
-        return user;
+    public RoleModel getRoleType() {
+        return roleType;
     }
 
-    public void setUser(UserModel user) {
-        this.user = user;
+    public void setRoleType(RoleModel user) {
+        this.roleType = user;
     }
 
     public String getName() {
@@ -74,8 +74,8 @@ public class TaskModel {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserModel user;
+    @JoinColumn(name = "role_type")
+    private RoleModel roleType;
 
     @ManyToOne
     @JoinColumn(name = "project_id")

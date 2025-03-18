@@ -41,7 +41,7 @@ public class Chromosome {
             double[] userLoads = new double[users.size()];
 
             for (int i = 0; i < assignments.size(); i++) {
-                double hours = tasks.get(i).getStoryPoints();
+                double hours = tasks.get(i).getEstimatedRemainingTime();
                 int userIndex = assignments.get(i);
                 userLoads[userIndex] += hours;
             }
@@ -86,13 +86,13 @@ public class Chromosome {
     }
 
 
-    public Chromosome mutate(int numUsers) {
+    public Chromosome mutate() {
         List<Integer> mutatedAssignments = new ArrayList<>(this.assignments);
         int numberOfMutations = random.nextInt(mutatedAssignments.size()) + 1;
 
         for (int i = 0; i < numberOfMutations; i++) {
             int index = random.nextInt(mutatedAssignments.size());
-            int newUser = random.nextInt(numUsers);
+            int newUser = random.nextInt(users.size());
             mutatedAssignments.set(index, newUser);
         }
 

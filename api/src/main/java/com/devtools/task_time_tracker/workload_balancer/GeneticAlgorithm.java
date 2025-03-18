@@ -27,27 +27,35 @@ public class GeneticAlgorithm {
 
         for (int generation = 0; generation < generations; generation++) {
             List<Chromosome> newPopulation = new ArrayList<>();
-            for (int i = 0; i < populationSize; i++) {
+            int crossoverSplitPoint = (int) (crossoverRate * populationSize);
+            for (int i = 0; i < crossoverSplitPoint; i++){
                 Chromosome parent1 = select(population);
                 Chromosome parent2 = select(population);
-                Chromosome[] offspring;
-                if (random.nextDouble() < crossoverRate) {
-                    offspring = parent1.crossover(parent2);
-                } else {
-                    offspring = new Chromosome[]{parent1, parent2};
-                }
-
-                for (Chromosome child : offspring) {
-                    if (random.nextDouble() < mutationRate) {
-                        child = child.mutate(users.size());
-                    }
-                    newPopulation.add(child);
-                }
+                Chromosome[] offspring = parent1.crossover(parent2);
+                newPopulation.add(offspring[0]);
+                newPopulation.add(offspring[1]);
             }
 
+            for (int i = 0; i < crossoverSplitPoint; i++){
+                Chromosome parent1 = select(population);
+                Chromosome parent2 = select(population);
+                Chromosome[] offspring = parent1.crossover(parent2);
+                newPopulation.add(offspring[0]);
+                newPopulation.add(offspring[1]);
+            }
+
+            for (int i = crossoverSplitPoint; i < populationSize; i++){
+                Chromosome parent = select(population);
+                newPopulation.add(parent.mutate());
+            }
+
+
             population = newPopulation;
-            bestChromosome = getBestChromosome(population);
-            System.out.println("Generation " + generation + " Best Fitness: " + bestChromosome.evaluate());
+            Chromosome currentBestChromosome = getBestChromosome(population);
+
+            bestChromosome = (bestChromosome == null || currentBestChromosome.evaluate() < bestChromosome.evaluate())
+                    ? currentBestChromosome
+                    : bestChromosome;
         }
 
         return bestChromosome;
@@ -62,7 +70,7 @@ public class GeneticAlgorithm {
     }
 
     private Chromosome select(List<Chromosome> population) {
-        int tournamentSize = 3;
+        int tournamentSize = 5;
         List<Chromosome> tournament = new ArrayList<>();
         for (int i = 0; i < tournamentSize; i++) {
             tournament.add(population.get(random.nextInt(population.size())));

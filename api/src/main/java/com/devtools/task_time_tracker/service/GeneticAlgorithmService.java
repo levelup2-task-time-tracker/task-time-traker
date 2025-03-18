@@ -15,7 +15,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class GeneticAlgorithmService {
@@ -29,12 +28,12 @@ public class GeneticAlgorithmService {
     @Autowired
     ProjectRepository projectRepository;
 
-    public List<AssignmentDto> getRecommendations(UUID projectId) throws ResponseStatusException{
+    public List<AssignmentDto> getSuggestions(UUID projectId, String role) throws ResponseStatusException{
         Optional<ProjectModel> projectModelOptional = projectRepository.findById(projectId);
         if (projectModelOptional.isEmpty()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found");
         }
-        List<Object> resultSet = projectMemberRepository.sumByUser(projectId);
+        List<Object> resultSet = projectMemberRepository.sumByUser(projectId, role);
         List<User> users = resultSet.stream()
                 .map(row -> {
                     Object[] columns = (Object[]) row;
@@ -45,18 +44,19 @@ public class GeneticAlgorithmService {
                 })
                 .toList();
 
-        List<TaskModel> taskModels = taskRepository.findByProject(projectModelOptional.get());
+        resultSet = projectMemberRepository.sumByTask(projectId);
+        List<Task> tasks = resultSet.stream()
+                .map(row -> {
+                    Object[] columns = (Object[]) row;
+                    UUID taskId = (UUID) columns[0];
+                    String taskName = (String) columns[1];
+                    double estimatedRemainingTime = ((BigDecimal) columns[2]).doubleValue();
+                    return new Task(taskId,estimatedRemainingTime, taskName);
+                })
+                .toList();
 
-        List<Task> tasks = taskModels.stream().map(taskModel -> {
-            return new Task(
-                    taskModel.getTaskId(),
-                    taskModel.getStoryPoints(),
-                    taskModel.getName()
-            );
-        }).toList();
-
-        Random random = new Random(100);
-        GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(users, tasks, random, 0.5, 0.5, 100, 50);
+        Random random = new Random(0L);
+        GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(users, tasks, random, 0.6, 0.4, 50, 20);
         Chromosome bestChromosome = geneticAlgorithm.run();
         List<Integer> assignments = bestChromosome.getAssignments();
         Map<Integer, AssignmentDto> assignmentMap = new HashMap<>();
