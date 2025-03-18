@@ -14,5 +14,4 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, UUID> {
             "JOIN project_member pm ON p.project_id = pm.project_id " +
             "WHERE pm.user_id = :userId", nativeQuery = true)
     List<ProjectModel> findByUser(@Param("userId") UUID userId);
-
 }

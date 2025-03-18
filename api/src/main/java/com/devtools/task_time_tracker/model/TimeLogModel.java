@@ -66,4 +66,8 @@ public class TimeLogModel {
         this.startDateTime = startDateTime;
         this.endDateTime = null;
     }
+
+    public void setUser(UserModel user) {
+        this.user = user;
+    }
 }

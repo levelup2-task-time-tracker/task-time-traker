@@ -1,6 +1,7 @@
 package com.devtools.task_time_tracker.controller;
 
 import com.devtools.task_time_tracker.model.TimeLogModel;
+import com.devtools.task_time_tracker.service.AnomalyService;
 import com.devtools.task_time_tracker.service.TimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/time")
@@ -18,14 +20,10 @@ public class TimeController {
     @Autowired
     private TimeService timeService;
 
-    // Time Started
-    // Current Time Logged
-
-
     @PostMapping("/{taskId}/start")
     public ResponseEntity<String> startTime(
             @AuthenticationPrincipal OAuth2User user,
-            @PathVariable Long taskId
+            @PathVariable UUID taskId
     ){
         try{
             TimeLogModel timeLogModel = timeService.startTime(taskId);
@@ -45,7 +43,7 @@ public class TimeController {
     @PostMapping("/{taskId}/stop")
     public ResponseEntity<String> stopTime(
             @AuthenticationPrincipal OAuth2User user,
-            @PathVariable Long taskId
+            @PathVariable UUID taskId
     ){
         try{
             TimeLogModel timeLogModel = timeService.stopTime(taskId);
