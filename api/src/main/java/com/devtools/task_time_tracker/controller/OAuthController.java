@@ -43,7 +43,6 @@ public class OAuthController {
 
     @GetMapping("/auth/callback")
     public ResponseEntity<TokenDto> callback(@RequestParam("code") String code) throws URISyntaxException {
-        System.out.println("Callback");
         String token;
         try {
             token = new GoogleAuthorizationCodeTokenRequest(
@@ -53,6 +52,7 @@ public class OAuthController {
                     code,
                     "http://localhost:8000/auth/code"
             ).execute().getAccessToken();
+
         } catch (IOException e) {
             System.err.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
