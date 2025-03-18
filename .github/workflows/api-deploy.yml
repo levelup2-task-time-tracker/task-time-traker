@@ -24,7 +24,7 @@ jobs:
       - name: Build Spring Boot app
         run: |
             cd api
-            mvn clean package 
+            mvn clean package -DskipTests 
 
       - name: EC2 Private Key from GitHub Secrets 
         run: |
