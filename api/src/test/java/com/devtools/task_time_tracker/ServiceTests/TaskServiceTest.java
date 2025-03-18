@@ -1,6 +1,7 @@
-package com.devtools.task_time_tracker.service;
+package com.devtools.task_time_tracker.ServiceTests;
 
 import com.devtools.task_time_tracker.model.TaskModel;
+import com.devtools.task_time_tracker.service.TaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +29,7 @@ public class TaskServiceTest {
 
     @Test
     void testCreateTask() {
-        TaskModel task = taskService.createTask("Test Description", "Test Name", 5, projectId);
+        TaskModel task = taskService.createTask("Test Description", "Test Name", 5L, projectId);
 
         assertNotNull(task);
         // Add more assertions based on the actual implementation of TaskModel
@@ -36,7 +37,7 @@ public class TaskServiceTest {
 
     @Test
     void testUpdateTask() {
-        TaskModel task = taskService.updateTask(taskId, "New Description", "New Name", 8, projectId);
+        TaskModel task = taskService.updateTask(taskId, "New Description", "New Name", 8L);
 
         assertNotNull(task);
         // Add more assertions based on the actual implementation of TaskModel
