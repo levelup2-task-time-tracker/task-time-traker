@@ -16,6 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -138,22 +140,18 @@ class AnomalyServiceTest {
         return List.of(createTimeLogOnDate(3, LocalDate.now().minusDays(5)),
                 createTimeLogOnDate(12, LocalDate.now().minusDays(4)),
                 createTimeLogOnDate(1, LocalDate.now().minusDays(3)),
+                createTimeLogOnDate(14, LocalDate.now().minusDays(2)),
+                createTimeLogOnDate(14, LocalDate.now().minusDays(6)),
                 createTimeLogOnDate(14, LocalDate.now().minusDays(2)));
     }
 
     private List<TimeLogModel> createShortTaskLogs() {
-        var logs =  List.of(createTimeLogOnDate(10, LocalDate.now()),
-                createTimeLogOnDate(5, LocalDate.now()),
-                createTimeLogOnDate(8, LocalDate.now()),
-                createTimeLogOnDate(7, LocalDate.now()),
-                createTimeLogOnDate(9, LocalDate.now()),
-                createTimeLogOnDate(12, LocalDate.now()));
-
-        for(int i = 0; i < 4; i++){
-            logs.get(i).setTask(testTasks.get(i));
-        }
-
-        return logs;
+        return List.of(createTimeLogOnDate(1, LocalDate.now()),
+                createTimeLogAtHour(1),
+                createTimeLogAtHour(2),
+                createTimeLogAtHour(3),
+                createTimeLogAtHour(4),
+                createTimeLogAtHour(5));
     }
 
     private TimeLogModel createTimeLogWithDuration(int durationHours) {
