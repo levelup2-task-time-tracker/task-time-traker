@@ -123,9 +123,9 @@ public class AnomalyService {
             long hoursWorked = entry.getValue().toHours();
             double zScore = (hoursWorked - monthAvg) / (monthStdDev + 1e-6);
 
-            if (zScore > 2) {
+            if (zScore > 1) {
                 logAnomaly(user, "irregular work pattern", "Worked " + hoursWorked + " hours (z-score: " + String.format("%.2f", zScore) + ")");
-            }else if (zScore < -2) {
+            }else if (zScore < -1) {
                 logAnomaly(user, "underutilized", "Worked only " + hoursWorked + " hours (z-score: " + String.format("%.2f", zScore) + ")");
             }
         }
@@ -161,8 +161,8 @@ public class AnomalyService {
     public void multiTaskingCheck(List<TimeLogModel> logs, UserModel user){
         long switchStreak = logs.stream()
                 .filter(log -> log.getEndDateTime() != null)
-                .map(log -> Duration.between(log.getStartDateTime(), log.getEndDateTime()).toMinutes())
-                .filter(duration -> duration < 15)
+                .map(log -> Duration.between(log.getStartDateTime(), log.getEndDateTime()).toHours())
+                .filter(duration -> duration < 2.5)
                 .count();
 
         if (switchStreak > 5) {
