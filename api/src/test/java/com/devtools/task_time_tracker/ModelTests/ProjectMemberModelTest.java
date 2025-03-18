@@ -1,5 +1,9 @@
-package com.devtools.task_time_tracker.model;
+package com.devtools.task_time_tracker.ModelTests;
 
+import com.devtools.task_time_tracker.model.ProjectMemberModel;
+import com.devtools.task_time_tracker.model.ProjectModel;
+import com.devtools.task_time_tracker.model.RoleModel;
+import com.devtools.task_time_tracker.model.UserModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,8 +20,8 @@ public class ProjectMemberModelTest {
     @BeforeEach
     void setUp() {
         project = new ProjectModel("Test Project", "Test Description");
-        user = new UserModel(1L, "John Doe", "john.doe@example.com");
-        role = new RoleModel("Manager");
+        user = new UserModel("John Doe", "john.doe@example.com");
+        role = new RoleModel();
         projectMember = new ProjectMemberModel(project, user, role);
     }
 
@@ -32,8 +36,8 @@ public class ProjectMemberModelTest {
     @Test
     void testSettersAndGetters() {
         ProjectModel newProject = new ProjectModel("New Project", "New Description");
-        UserModel newUser = new UserModel(2L, "Jane Smith", "jane.smith@example.com");
-        RoleModel newRole = new RoleModel("Developer");
+        UserModel newUser = new UserModel("Jane Smith", "jane.smith@example.com");
+        RoleModel newRole = new RoleModel();
 
         projectMember.setProject(newProject);
         projectMember.setUser(newUser);
