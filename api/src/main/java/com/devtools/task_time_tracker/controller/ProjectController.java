@@ -71,19 +71,19 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.deleteProject(projectId));
     }
 
-    @PostMapping("/{projectId}/add_member/{userId}")
+    @PostMapping("/{projectId}/add_member")
     public ResponseEntity<Boolean> addMember(
             @PathVariable UUID projectId,
-            @PathVariable UUID userId,
-            @RequestParam(required = false, defaultValue = "Contributor") String role
+            @RequestParam UUID userId,
+            @RequestParam(required = false, defaultValue = "Developer") String role
     ) {
         return ResponseEntity.ok(projectService.addMember(projectId, userId, role));
     }
 
-    @DeleteMapping("/{projectId}/remove_member/{userId}")
+    @DeleteMapping("/{projectId}/remove_member")
     public ResponseEntity<Boolean> removeMember(
             @PathVariable UUID projectId,
-            @PathVariable UUID userId
+            @RequestParam UUID userId
     ) {
         return ResponseEntity.ok(projectService.removeMember(projectId, userId));
     }
