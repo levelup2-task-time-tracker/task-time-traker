@@ -1,6 +1,7 @@
 package com.devtools.task_time_tracker_cli.command;
 
 import com.devtools.task_time_tracker_cli.service.ApiService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -100,7 +102,10 @@ public class ProjectCommand {
             return "You must login first.";
         }else{
             ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/time", new HashMap<>());
-            return response.getBody();
+
+            JSONObject jsonObject = new JSONObject(response.getBody());
+
+            return "Total time spent on project is: " + jsonObject.get("days") + " working day(s), " + jsonObject.get("hours") + " hours.";
         }
     }
 
@@ -109,8 +114,22 @@ public class ProjectCommand {
         if(api.authenticate()){
             return "You must login first.";
         }else{
+            StringBuilder returnSb = new StringBuilder();
+
             ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/time/person", new HashMap<>());
-            return response.getBody();
+
+            JSONObject outerJsonObject = new JSONObject(response.getBody());
+
+
+            Iterator<String> outerKeys = outerJsonObject.keys();
+            while (outerKeys.hasNext()) {
+                String userName = outerKeys.next();
+                JSONObject innerJsonObject = outerJsonObject.getJSONObject(userName);
+
+                returnSb.append(userName + " - "+ innerJsonObject.get("days") + " working day(s), " + innerJsonObject.get("hours") + " hours.\n");
+            }
+
+            return returnSb.toString();
         }
     }
 
@@ -119,18 +138,21 @@ public class ProjectCommand {
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/time/task", new HashMap<>());
-            return response.getBody();
-        }
-    }
+            StringBuilder returnSb = new StringBuilder();
 
-    @ShellMethod(key = "get-project-day-points", value = "Get average time spent per point")
-    public String getDaysPerPoint(String projectId){
-        if(api.authenticate()){
-            return "You must login first.";
-        }else{
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/time/days_per_point", new HashMap<>());
-            return response.getBody();
+            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/time/task", new HashMap<>());
+
+            JSONObject outerJsonObject = new JSONObject(response.getBody());
+
+            Iterator<String> outerKeys = outerJsonObject.keys();
+            while (outerKeys.hasNext()) {
+                String taskName = outerKeys.next();
+                JSONObject innerJsonObject = outerJsonObject.getJSONObject(taskName);
+
+                returnSb.append(taskName + " - "+ innerJsonObject.get("days") + " working day(s), " + innerJsonObject.get("hours") + " hours.\n");
+            }
+
+            return returnSb.toString();
         }
     }
 
@@ -139,7 +161,27 @@ public class ProjectCommand {
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/time/story_points", new HashMap<>());
+            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/story_points", new HashMap<>());
+            return response.getBody();
+        }
+    }
+
+    @ShellMethod(key = "get-project-completed-tasks-story-points", value = "Get total time spent per point")
+    public String getTotalCompletedTasksStoryPoints(String projectId){
+        if(api.authenticate()){
+            return "You must login first.";
+        }else{
+            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/story_points/completed", new HashMap<>());
+            return response.getBody();
+        }
+    }
+
+    @ShellMethod(key = "get-avg-completed-time-per-point", value = "Get average time spent per point")
+    public String getDaysPerPoint(String projectId){
+        if(api.authenticate()){
+            return "You must login first.";
+        }else{
+            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/time/avg_per_completed_point", new HashMap<>());
             return response.getBody();
         }
     }

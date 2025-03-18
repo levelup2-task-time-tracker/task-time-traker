@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -95,27 +97,33 @@ public class ProjectController {
 
 
     @GetMapping("/{projectId}/time")
-    public ResponseEntity<Double> getTotalTimeSpent(@AuthenticationPrincipal OAuth2User user, @PathVariable String projectId) {
-        return ResponseEntity.ok(0.0);
+    public ResponseEntity<HashMap<String, Long>> getTotalProjectTime(@PathVariable UUID projectId) {
+        return ResponseEntity.ok(projectService.getTotalProjectTime(projectId));
     }
 
     @GetMapping("/{projectId}/time/person")
-    public ResponseEntity<Double> getTimeSpentPerPerson(@AuthenticationPrincipal OAuth2User user, @PathVariable String projectId) {
-        return ResponseEntity.ok(0.0);
+    public ResponseEntity<HashMap<String, HashMap<String, Long>>> getTimeSpentPerPerson(@AuthenticationPrincipal OAuth2User user, @PathVariable UUID projectId) {
+        return ResponseEntity.ok(projectService.getProjectMembersTime(projectId));
     }
 
     @GetMapping("/{projectId}/time/task")
-    public ResponseEntity<Double> getTimeSpentPerTask(@AuthenticationPrincipal OAuth2User user, @PathVariable String projectId) {
-        return ResponseEntity.ok(0.0);
-    }
-
-    @GetMapping("/{projectId}/time/days_per_point")
-    public ResponseEntity<Double> getAvgDayPerStoryPoint(@AuthenticationPrincipal OAuth2User user, @PathVariable String projectId) {
-        return ResponseEntity.ok(0.0);
+    public ResponseEntity<HashMap<String, HashMap<String, Long>>> getTimeSpentPerTask(@AuthenticationPrincipal OAuth2User user, @PathVariable UUID projectId) {
+        return ResponseEntity.ok(projectService.getProjectTasksTime(projectId));
     }
 
     @GetMapping("/{projectId}/story_points")
-    public ResponseEntity<Double> getTotalStoryPoint(@AuthenticationPrincipal OAuth2User user, @PathVariable String projectId) {
-        return ResponseEntity.ok(0.0);
+    public ResponseEntity<Integer> getTotalStoryPoint(@AuthenticationPrincipal OAuth2User user, @PathVariable UUID projectId) {
+        return ResponseEntity.ok(projectService.getProjectTotalStoryPoints(projectId, false));
+    }
+
+
+    @GetMapping("/{projectId}/story_points/completed")
+    public ResponseEntity<Integer> getTotalCompletedTasksStoryPoint(@AuthenticationPrincipal OAuth2User user, @PathVariable UUID projectId) {
+        return ResponseEntity.ok(projectService.getProjectTotalStoryPoints(projectId, true));
+    }
+
+    @GetMapping("/{projectId}/time/avg_per_completed_point")
+    public ResponseEntity<HashMap<String, Long>> getProjectAverageTimePerCompletedStoryPoints(@AuthenticationPrincipal OAuth2User user, @PathVariable UUID projectId) {
+        return ResponseEntity.ok(projectService.getProjectAverageTimePerCompletedStoryPoints(projectId));
     }
 }
