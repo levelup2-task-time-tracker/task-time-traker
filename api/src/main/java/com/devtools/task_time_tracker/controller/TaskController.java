@@ -22,7 +22,7 @@ public class TaskController {
     public ResponseEntity<TaskModel> createTask(
             @RequestParam String description,
             @RequestParam String name,
-            @RequestParam Integer storyPoints,
+            @RequestParam Long storyPoints,
             @RequestParam UUID projectId
     ) {
         TaskModel task = taskService.createTask(description, name, storyPoints, projectId);

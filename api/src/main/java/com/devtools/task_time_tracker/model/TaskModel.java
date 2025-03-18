@@ -2,6 +2,7 @@ package com.devtools.task_time_tracker.model;
 
 import jakarta.persistence.*;
 
+import java.security.PublicKey;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -13,6 +14,15 @@ public class TaskModel {
     private UUID taskId;
 
     private String name;
+
+    public TaskModel(){}
+
+    public TaskModel(String description, String name, Long storyPoints, ProjectModel project){
+        this.description = description;
+        this.name = name;
+        this.storyPoints = storyPoints;
+        this.project = project;
+    }
 
     public String getDescription() {
         return description;
