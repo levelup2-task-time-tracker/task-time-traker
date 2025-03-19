@@ -55,14 +55,19 @@ jobs:
         with:
           name: task-time-tracker-cli
 
+      - name: Get Git Commit SHA
+        id: get_sha
+        run: echo "COMMIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
-          tag_name: "TASK-TIME-TRACKER-CLI"
-          release_name: Release CLI
+          tag_name: ${{ env.COMMIT_SHA }}
+          release_name: "Release CLI-$${{ env.COMMIT_SHA }} "
+          body: "This is the release for commit ${{ env.COMMIT_SHA }}"
           draft: false
           prerelease: false
 
