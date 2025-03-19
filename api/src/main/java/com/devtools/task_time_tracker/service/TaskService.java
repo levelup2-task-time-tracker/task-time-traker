@@ -43,11 +43,7 @@ public class TaskService {
     }
 
     public  TaskModel updateTask(UUID taskId, String newDescription, String newName, Long storyPoints, String roleName) throws ResponseStatusException{
-        Optional<TaskModel> taskModelOptional = taskRepository.findById(taskId);
-        if (taskModelOptional.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
-        }
-        TaskModel task = taskModelOptional.get();
+        TaskModel task = sharedFunctions.verifyUserTask(taskId, null);
         ProjectModel project = sharedFunctions.findProject(task.getProject().getProjectId());
         UserModel user = sharedFunctions.getLoggedInUser();
         sharedFunctions.verifyUser(user, project);
@@ -70,11 +66,7 @@ public class TaskService {
     }
 
     public Boolean deleteTask(UUID taskId) {
-        Optional<TaskModel> taskModelOptional = taskRepository.findById(taskId);
-        if (taskModelOptional.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
-        }
-        TaskModel task = taskModelOptional.get();
+        TaskModel task = sharedFunctions.verifyUserTask(taskId, null);
         ProjectModel project = sharedFunctions.findProject(task.getProject().getProjectId());
         UserModel user = sharedFunctions.getLoggedInUser();
         sharedFunctions.verifyUser(user, project);
@@ -88,13 +80,7 @@ public class TaskService {
 
     public Map<String, Object> completeTask(UUID taskId) throws ResponseStatusException{
         Map<String, Object> response = new HashMap<>();
-
-
-        Optional<TaskModel> taskModelOptional = taskRepository.findById(taskId);
-        if (taskModelOptional.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
-        }
-        TaskModel task = taskModelOptional.get();
+        TaskModel task = sharedFunctions.verifyUserTask(taskId, null);
 
         if (task.getCompletedAt() != null) {
             response.put("success", false);
