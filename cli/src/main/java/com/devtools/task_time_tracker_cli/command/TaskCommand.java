@@ -31,28 +31,45 @@ public class TaskCommand {
     }
 
     @ShellMethod(key = "update-task", value = "Update a task")
-    public String updateTask(String taskId, String name, String description, String points){
+    public String updateTask(String taskName, String newName, String description, String points){
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            var params = new HashMap<String, Object>();
-            params.put("name", name);
-            params.put("description", description);
-            params.put("storyPoints", points);
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"tasks/" + taskId, params);
-            return response.getBody();
+            String taskId = getTaskUuid(taskName);
+            if(taskId.contains("404")){
+                return taskId;
+            }else {
+                var params = new HashMap<String, Object>();
+                params.put("name", newName);
+                params.put("description", description);
+                params.put("storyPoints", points);
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"tasks/" + taskId, params);
+                return response.getBody();
+            }
         }
     }
 
     @ShellMethod(key = "delete-task", value = "Delete a task")
-    public String deleteTask(String taskId){
+    public String deleteTask(String taskName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            var params = new HashMap<String, Object>();
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.DELETE,"tasks/" + taskId, params);
-            return response.getBody();
+            String taskId = getTaskUuid(taskName);
+            if(taskId.contains("404")){
+                return taskId;
+            }else {
+                var params = new HashMap<String, Object>();
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.DELETE, "tasks/" + taskId, params);
+                return response.getBody();
+            }
         }
+    }
+
+    private String getTaskUuid(String taskName){
+        var params = new HashMap<String, Object>();
+        params.put("taskName", taskName);
+        ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"tasks/uuid", params);
+        return response.getBody();
     }
 
 }

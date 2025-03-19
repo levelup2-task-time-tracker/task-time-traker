@@ -6,7 +6,10 @@ import com.devtools.task_time_tracker.service.GeneticAlgorithmService;
 import com.devtools.task_time_tracker.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -57,5 +60,17 @@ public class TaskController {
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Boolean> deleteTask(@PathVariable UUID taskId){
         return ResponseEntity.ok(taskService.deleteTask(taskId));
+    }
+
+    @GetMapping("/uuid")
+    public ResponseEntity<String> getUuid(
+            @AuthenticationPrincipal OAuth2User user,
+            @RequestParam String taskName
+    ){
+        try{
+            return ResponseEntity.ok(taskService.getUuid(taskName));
+        }catch (ResponseStatusException e){
+            return ResponseEntity.ok(e.getLocalizedMessage());
+        }
     }
 }

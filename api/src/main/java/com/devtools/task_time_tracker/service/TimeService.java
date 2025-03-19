@@ -1,16 +1,12 @@
 package com.devtools.task_time_tracker.service;
 
-import com.devtools.task_time_tracker.model.ProjectModel;
-import com.devtools.task_time_tracker.model.TaskModel;
-import com.devtools.task_time_tracker.model.TimeLogModel;
-import com.devtools.task_time_tracker.model.UserModel;
+import com.devtools.task_time_tracker.model.*;
 import com.devtools.task_time_tracker.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.Time;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -103,5 +99,4 @@ public class TimeService {
 
         return task;
     }
-
 }

@@ -8,6 +8,8 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @ShellComponent
 public class UserCommand {
@@ -20,7 +22,8 @@ public class UserCommand {
             return "You must login first.";
         }else{
             ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"users", new HashMap<>());
-            return response.getBody();
+            List<Map<String, Object>> parsedBody = api.jsonArrayHandler(response);
+            return api.displayResponseArray(parsedBody, "All projects");
         }
     }
 

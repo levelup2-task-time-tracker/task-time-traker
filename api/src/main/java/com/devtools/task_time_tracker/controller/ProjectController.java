@@ -128,4 +128,16 @@ public class ProjectController {
     public ResponseEntity<HashMap<String, Long>> getProjectAverageTimePerCompletedStoryPoints(@AuthenticationPrincipal OAuth2User user, @PathVariable UUID projectId) {
         return ResponseEntity.ok(projectService.getProjectAverageTimePerCompletedStoryPoints(projectId));
     }
+
+    @GetMapping("/uuid")
+    public ResponseEntity<String> getUuid(
+            @AuthenticationPrincipal OAuth2User user,
+            @RequestParam String projectName
+    ){
+        try{
+            return ResponseEntity.ok(projectService.getUuidFromName(projectName));
+        }catch (ResponseStatusException e){
+            return ResponseEntity.ok(e.getLocalizedMessage());
+        }
+    }
 }

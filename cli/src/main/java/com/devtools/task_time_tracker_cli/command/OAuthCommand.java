@@ -57,9 +57,9 @@ public class OAuthCommand {
     }
 
     @ShellMethod(key = "validate", value = "Validate auth code for access to the API")
-    public String validate(String authCode) {
+    public String validate() {
         String url = UriComponentsBuilder.fromUriString(AUTH_TOKEN_ENDPOINT)
-                .queryParam("code", authCode)
+                .queryParam("code", authToken.getAccessCode())
                 .toUriString();
         try {
             ResponseEntity<TokenDto> response = restTemplate.getForEntity(url, TokenDto.class);

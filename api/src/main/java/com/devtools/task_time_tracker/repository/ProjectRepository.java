@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ProjectRepository extends JpaRepository<ProjectModel, UUID> {
@@ -14,7 +15,7 @@ public interface ProjectRepository extends JpaRepository<ProjectModel, UUID> {
             "JOIN project_member pm ON p.project_id = pm.project_id " +
             "WHERE pm.user_id = :userId", nativeQuery = true)
     List<ProjectModel> findByUser(@Param("userId") UUID userId);
-
+    Optional<ProjectModel> findByName(String name);
     @Query(value = "SELECT get_total_project_time_in_seconds(:projectId)", nativeQuery = true)
     long getTotalProjectTimeInSeconds(@Param("projectId") UUID projectId);
 
