@@ -10,6 +10,13 @@ jobs:
   build_and_deploy:
     name: Build and Deploy Spring Boot App
     runs-on: ubuntu-latest
+    env:
+      DB_URL: ${{ secrets.DB_URL }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      OAUTH2_ID: ${{ secrets.OAUTH2_ID }}
+      OAUTH2_SECRET: ${{ secrets.OAUTH2_SECRET }} 
+
 
     steps:
       - name: Checkout code
@@ -44,11 +51,11 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22 
           env: |
-            DB_URL: ${{ secrets.DB_URL }}
-            DB_USERNAME: ${{ secrets.DB_USERNAME }}
-            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-            OAUTH2_ID: ${{ secrets.OAUTH2_ID }}
-            OAUTH2_SECRET: ${{ secrets.OAUTH2_SECRET }} 
+            DB_URL: ${{ env.DB_URL }}
+            DB_USERNAME: ${{ env.DB_USERNAME }}
+            DB_PASSWORD: ${{ env.DB_PASSWORD }}
+            OAUTH2_ID: ${{ env.OAUTH2_ID }}
+            OAUTH2_SECRET: ${{ env.OAUTH2_SECRET }} 
           script: |
             cd /home/ec2-user/app
             chmod +x *.jar
