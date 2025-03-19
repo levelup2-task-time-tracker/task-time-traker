@@ -45,17 +45,17 @@ jobs:
 
       - name: Run Spring Boot Application
         uses: appleboy/ssh-action@v0.1.10
-        with:
+        env:
+          DB_URL: ${{ env.DB_URL }}
+          DB_USERNAME: ${{ env.DB_USERNAME }}
+          DB_PASSWORD: ${{ env.DB_PASSWORD }}
+          OAUTH2_ID: ${{ env.OAUTH2_ID }}
+          OAUTH2_SECRET: ${{ env.OAUTH2_SECRET }}
           host: ${{ secrets.EC2_PUBLIC_IP }}
+        with:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22 
-          env: |
-            DB_URL: ${{ env.DB_URL }}
-            DB_USERNAME: ${{ env.DB_USERNAME }}
-            DB_PASSWORD: ${{ env.DB_PASSWORD }}
-            OAUTH2_ID: ${{ env.OAUTH2_ID }}
-            OAUTH2_SECRET: ${{ env.OAUTH2_SECRET }} 
+          port: 22  
           script: |
             cd /home/ec2-user/app
             chmod +x *.jar
