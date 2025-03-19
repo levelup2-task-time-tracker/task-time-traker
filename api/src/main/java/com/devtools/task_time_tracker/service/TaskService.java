@@ -75,4 +75,7 @@ public class TaskService {
         return true;
     }
 
+    public String getUuid(String taskName){
+        return getUserTaskUuid(projectMemberRepository, taskRepository, taskName, getLoggedInUser(userRepository)).toString();
+    }
 }

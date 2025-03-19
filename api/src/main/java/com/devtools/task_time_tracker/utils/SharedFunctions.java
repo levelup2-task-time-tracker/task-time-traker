@@ -1,14 +1,7 @@
 package com.devtools.task_time_tracker.utils;
 
-import com.devtools.task_time_tracker.model.ProjectMemberModel;
-import com.devtools.task_time_tracker.model.ProjectModel;
-import com.devtools.task_time_tracker.model.RoleModel;
-import com.devtools.task_time_tracker.model.UserModel;
-import com.devtools.task_time_tracker.repository.ProjectMemberRepository;
-import com.devtools.task_time_tracker.repository.ProjectRepository;
-import com.devtools.task_time_tracker.repository.RoleRepository;
-import com.devtools.task_time_tracker.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.devtools.task_time_tracker.model.*;
+import com.devtools.task_time_tracker.repository.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
@@ -80,4 +73,18 @@ public class SharedFunctions {
 
     }
 
+    public static UUID getUserTaskUuid(ProjectMemberRepository projectMemberRepository, TaskRepository taskRepository, String taskName, UserModel user) throws RuntimeException{
+        return projectMemberRepository.findByUser(user).stream()
+                .map(ProjectMemberModel::getProject)
+                .flatMap(project -> taskRepository.findByProjectAndName(project, taskName).stream())
+                .findFirst()
+                .map(TaskModel::getTaskId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No task with the given name found for user"));
+    }
+
+    public static UUID getProjectUuid(ProjectRepository projectRepository, String projectName) {
+        return projectRepository.findByName(projectName)
+                .map(ProjectModel::getProjectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found: " + projectName));
+    }
 }

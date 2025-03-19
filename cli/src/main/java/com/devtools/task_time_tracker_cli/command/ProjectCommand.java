@@ -49,175 +49,250 @@ public class ProjectCommand {
             return "You must login first.";
         }else{
             ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/all", new HashMap<>());
-            return response.getBody();
+            List<Map<String, Object>> parsedBody = api.jsonArrayHandler(response);
+            return api.displayResponseArray(parsedBody, "All projects");
         }
     }
 
     @ShellMethod(key = "update-project", value = "Update a specific project")
-    public String updateProject(String projectId, String description, String name){
+    public String updateProject(String projectName, String description, String name){
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            var params = new HashMap<String, Object>();
-            params.put("description", description);
-            params.put("name", name);
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"projects/" + projectId, params);
-            return response.getBody();
+            String projectId = getProjectUuid(projectName);
+            if(projectId.contains("404")){
+               return projectId;
+            }else{
+                var params = new HashMap<String, Object>();
+                params.put("description", description);
+                params.put("name", name);
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"projects/" + projectId, params);
+                return response.getBody();
+            }
         }
     }
 
     @ShellMethod(key = "get-project-tasks", value = "Get all tasks of a specific project")
-    public String getProjectTasks(String projectId){
+    public String getProjectTasks(String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/tasks", new HashMap<>());
-            return response.getBody();
+            String projectId = getProjectUuid(projectName);
+            if(projectId.contains("404")){
+                return projectId;
+            }else{
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/tasks", new HashMap<>());
+                List<Map<String, Object>> parsedBody = api.jsonArrayHandler(response);
+                return api.displayResponseArray(parsedBody, "Tasks for project: " + projectName);
+            }
         }
     }
 
     @ShellMethod(key = "get-project-users", value = "Get all users working on a specific project")
-    public String getProjectUsers(String projectId){
+    public String getProjectUsers(String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/users", new HashMap<>());
-            return response.getBody();
+            String projectId = getProjectUuid(projectName);
+            if(projectId.contains("404")){
+                return projectId;
+            }else{
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/users", new HashMap<>());
+                return response.getBody();
+            }
         }
     }
 
     @ShellMethod(key = "delete-project", value = "Delete a specific project")
-    public String deleteProject(String projectId){
+    public String deleteProject(String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.DELETE,"projects/" + projectId, new HashMap<>());
-            return response.getBody();
+            String projectId = getProjectUuid(projectName);
+            if(projectId.contains("404")){
+                return projectId;
+            }else{
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.DELETE,"projects/" + projectId, new HashMap<>());
+                return response.getBody();
+            }
         }
     }
 
     @ShellMethod(key = "get-project-time", value = "Get total time spent on a project")
-    public String getProjectTime(String projectId){
+    public String getProjectTime(String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/time", new HashMap<>());
+            String projectId = getProjectUuid(projectName);
+            if(projectId.contains("404")){
+                return projectId;
+            }else{
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/time", new HashMap<>());
 
-            JSONObject jsonObject = new JSONObject(response.getBody());
+                JSONObject jsonObject = new JSONObject(response.getBody());
 
-            return "Total time spent on project is: " + jsonObject.get("days") + " working day(s), " + jsonObject.get("hours") + " hours.";
+                return "Total time spent on project is: " + jsonObject.get("days") + " working day(s), " + jsonObject.get("hours") + " hours.";
+            }
         }
     }
 
     @ShellMethod(key = "get-user-time", value = "Get total time spent by a user on a project")
-    public String getUserProjectTime(String projectId){
+    public String getUserProjectTime(String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            StringBuilder returnSb = new StringBuilder();
+            String projectId = getProjectUuid(projectName);
+            if(projectId.contains("404")){
+                return projectId;
+            }else{
+                StringBuilder returnSb = new StringBuilder();
 
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/time/person", new HashMap<>());
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/time/person", new HashMap<>());
 
-            JSONObject outerJsonObject = new JSONObject(response.getBody());
+                JSONObject outerJsonObject = new JSONObject(response.getBody());
 
 
-            Iterator<String> outerKeys = outerJsonObject.keys();
-            while (outerKeys.hasNext()) {
-                String userName = outerKeys.next();
-                JSONObject innerJsonObject = outerJsonObject.getJSONObject(userName);
+                Iterator<String> outerKeys = outerJsonObject.keys();
+                while (outerKeys.hasNext()) {
+                    String userName = outerKeys.next();
+                    JSONObject innerJsonObject = outerJsonObject.getJSONObject(userName);
 
-                returnSb.append(userName + " - "+ innerJsonObject.get("days") + " working day(s), " + innerJsonObject.get("hours") + " hours.\n");
+                    returnSb.append(userName + " - "+ innerJsonObject.get("days") + " working day(s), " + innerJsonObject.get("hours") + " hours.\n");
+                }
+
+                return returnSb.toString();
             }
-
-            return returnSb.toString();
         }
     }
 
     @ShellMethod(key = "get-task-time", value = "Get total time spent on a task of a project")
-    public String getTaskProjectTime(String projectId){
+    public String getTaskProjectTime(String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            StringBuilder returnSb = new StringBuilder();
+            String projectId = getProjectUuid(projectName);
+            if(projectId.contains("404")){
+                return projectId;
+            }else {
+                StringBuilder returnSb = new StringBuilder();
 
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/time/task", new HashMap<>());
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET, "projects/" + projectId + "/time/task", new HashMap<>());
 
-            JSONObject outerJsonObject = new JSONObject(response.getBody());
+                JSONObject outerJsonObject = new JSONObject(response.getBody());
 
-            Iterator<String> outerKeys = outerJsonObject.keys();
-            while (outerKeys.hasNext()) {
-                String taskName = outerKeys.next();
-                JSONObject innerJsonObject = outerJsonObject.getJSONObject(taskName);
+                Iterator<String> outerKeys = outerJsonObject.keys();
+                while (outerKeys.hasNext()) {
+                    String taskName = outerKeys.next();
+                    JSONObject innerJsonObject = outerJsonObject.getJSONObject(taskName);
 
-                returnSb.append(taskName + " - "+ innerJsonObject.get("days") + " working day(s), " + innerJsonObject.get("hours") + " hours.\n");
+                    returnSb.append(taskName + " - " + innerJsonObject.get("days") + " working day(s), " + innerJsonObject.get("hours") + " hours.\n");
+                }
+
+                return returnSb.toString();
             }
-
-            return returnSb.toString();
         }
     }
 
     @ShellMethod(key = "get-project-story-points", value = "Get total time spent per point")
-    public String getTotalPerPoint(String projectId){
+    public String getTotalPerPoint(String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/story_points", new HashMap<>());
-            return response.getBody();
+            String projectId = getProjectUuid(projectName);
+            if(projectId.contains("404")){
+                return projectId;
+            }else {
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET, "projects/" + projectId + "/story_points", new HashMap<>());
+                return response.getBody();
+            }
         }
     }
 
     @ShellMethod(key = "get-project-completed-tasks-story-points", value = "Get total time spent per point")
-    public String getTotalCompletedTasksStoryPoints(String projectId){
+    public String getTotalCompletedTasksStoryPoints(String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/story_points/completed", new HashMap<>());
-            return response.getBody();
+            String projectId = getProjectUuid(projectName);
+            if(projectId.contains("404")){
+                return projectId;
+            }else {
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET, "projects/" + projectId + "/story_points/completed", new HashMap<>());
+                return response.getBody();
+            }
         }
     }
 
     @ShellMethod(key = "get-avg-completed-time-per-point", value = "Get average time spent per point")
-    public String getDaysPerPoint(String projectId){
+    public String getDaysPerPoint(String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/time/avg_per_completed_point", new HashMap<>());
-            return response.getBody();
+            String projectId = getProjectUuid(projectName);
+            if(projectId.contains("404")){
+                return projectId;
+            }else {
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET, "projects/" + projectId + "/time/avg_per_completed_point", new HashMap<>());
+                return response.getBody();
+            }
         }
     }
 
     @ShellMethod(key = "workload-suggestions", value = "Get workload suggestions")
-    public String updateTask(String projectId){
+    public String updateTask(String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            var params = new HashMap<String, Object>();
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/suggestions" + projectId, params);
-            return response.getBody();
+            String projectId = getProjectUuid(projectName);
+            if(projectId.contains("404")){
+                return projectId;
+            }else {
+                var params = new HashMap<String, Object>();
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET, "projects/suggestions" + projectId, params);
+                return response.getBody();
+            }
         }
     }
 
     @ShellMethod(key = "add-member", value = "Add member to project")
-    public String addMember(String userId, String projectId){
+    public String addMember(String userId, String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            var params = new HashMap<String, Object>();
-            params.put("userId", userId);
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"projects/add_member" + projectId, params);
-            return response.getBody();
+            String projectId = getProjectUuid(projectName);
+            if(projectId.contains("404")){
+                return projectId;
+            }else {
+                var params = new HashMap<String, Object>();
+                params.put("userId", userId);
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST, "projects/add_member" + projectId, params);
+                return response.getBody();
+            }
         }
     }
 
     @ShellMethod(key = "remove-member", value = "Remove member to project")
-    public String removeMember(String userId, String projectId){
+    public String removeMember(String userId, String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
-            var params = new HashMap<String, Object>();
-            params.put("userId", userId);
-            ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"projects/remove_member" + projectId, params);
-            return response.getBody();
+            String projectId = getProjectUuid(projectName);
+            if(projectId.contains("404")){
+                return projectId;
+            }else {
+                var params = new HashMap<String, Object>();
+                params.put("userId", userId);
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST, "projects/remove_member" + projectId, params);
+                return response.getBody();
+            }
         }
     }
+
+    private String getProjectUuid(String projectName){
+        var params = new HashMap<String, Object>();
+        params.put("projectName", projectName);
+        ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/uuid", params);
+        return response.getBody();
+    }
+
 }
