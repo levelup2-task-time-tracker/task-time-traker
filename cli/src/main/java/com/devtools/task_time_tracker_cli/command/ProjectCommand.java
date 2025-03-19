@@ -1,6 +1,7 @@
 package com.devtools.task_time_tracker_cli.command;
 
 import com.devtools.task_time_tracker_cli.service.ApiService;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -253,7 +254,8 @@ public class ProjectCommand {
             }else {
                 var params = new HashMap<String, Object>();
                 ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET, "projects/"+projectId+"/suggestions", params);
-                return response.getBody();
+                return  parseWorkloadData(response.getBody());
+
             }
         }
     }
@@ -302,6 +304,39 @@ public class ProjectCommand {
         params.put("projectName", projectName);
         ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/uuid", params);
         return response.getBody();
+    }
+
+    private String parseWorkloadData(String response) {
+        StringBuilder result = new StringBuilder();
+        JSONArray usersArray = new JSONArray(response);
+
+        for (int i = 0; i < usersArray.length(); i++) {
+            JSONObject userObject = usersArray.getJSONObject(i);
+            JSONObject user = userObject.getJSONObject("user");
+            String userName = user.getString("userName");
+            double workLoad = user.getDouble("workLoad");
+
+            result.append("User: ").append(userName).append(" (Workload: ").append(workLoad).append(" hours)\n");
+            result.append("Tasks to assign:\n");
+
+            JSONArray tasksArray = userObject.getJSONArray("tasks");
+
+            for (int j = 0; j < tasksArray.length(); j++) {
+                JSONObject task = tasksArray.getJSONObject(j);
+                String taskName = task.getString("taskName");
+                String taskId = task.getString("taskId");
+                double estimatedRemainingTime = task.getDouble("estimatedRemainingTime");
+
+                result.append("  - Task Name: ").append(taskName).append("\n");
+                result.append("    Task ID: ").append(taskId).append("\n");
+                result.append("    Estimated Remaining Time: ").append(estimatedRemainingTime).append(" hours\n");
+                result.append("\n");
+            }
+
+            result.append("=".repeat(50)).append("\n");
+        }
+
+        return result.toString();
     }
 
     @ShellMethod(key = "complete-project", value = "Complete a specific project")
