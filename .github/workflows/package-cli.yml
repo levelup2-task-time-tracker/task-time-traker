@@ -72,7 +72,7 @@ jobs:
           prerelease: false
 
       - name: List target directory
-        run: ls -al target/
+        run: ls -al ./cli/target/
 
       # Upload production artifact to release
       - name: Upload production artifact to release
