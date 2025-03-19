@@ -61,7 +61,7 @@ public class GeneticAlgorithm {
         return bestChromosome;
     }
 
-    private List<Chromosome> initializePopulation() {
+    List<Chromosome> initializePopulation() {
         List<Chromosome> population = new ArrayList<>();
         for (int i = 0; i < populationSize; i++) {
             population.add(new Chromosome(users, tasks, random));
@@ -69,7 +69,7 @@ public class GeneticAlgorithm {
         return population;
     }
 
-    private Chromosome select(List<Chromosome> population) {
+    Chromosome select(List<Chromosome> population) {
         int tournamentSize = 5;
         List<Chromosome> tournament = new ArrayList<>();
         for (int i = 0; i < tournamentSize; i++) {
@@ -79,7 +79,7 @@ public class GeneticAlgorithm {
         return getBestChromosome(tournament);
     }
 
-    private Chromosome getBestChromosome(List<Chromosome> population) {
+    Chromosome getBestChromosome(List<Chromosome> population) {
         Chromosome best = population.getFirst();
         for (Chromosome chromosome : population) {
             if (chromosome.evaluate() < best.evaluate()) {
