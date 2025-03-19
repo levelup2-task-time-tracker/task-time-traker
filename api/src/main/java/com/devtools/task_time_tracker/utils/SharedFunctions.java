@@ -115,4 +115,19 @@ public class SharedFunctions {
                 .map(ProjectModel::getProjectId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found: " + projectName));
     }
+
+    public TaskModel verifyUserTask(UUID taskId, UserModel user) throws RuntimeException {
+        if (user == null) {
+            user = getLoggedInUser();
+        }
+        Optional<TaskModel> taskModelOptional = taskRepository.findById(taskId);
+        if (taskModelOptional.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
+        }
+        TaskModel task = taskModelOptional.get();
+        ProjectModel project = findProject(task.getProject().getProjectId());
+        verifyUser(user, project);
+
+        return task;
+    }
 }

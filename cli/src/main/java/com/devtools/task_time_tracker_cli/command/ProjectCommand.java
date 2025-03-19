@@ -1,6 +1,7 @@
 package com.devtools.task_time_tracker_cli.command;
 
 import com.devtools.task_time_tracker_cli.service.ApiService;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -252,14 +253,18 @@ public class ProjectCommand {
                 return projectId;
             }else {
                 var params = new HashMap<String, Object>();
-                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET, "projects/suggestions" + projectId, params);
-                return response.getBody();
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET, "projects/"+projectId+"/suggestions", params);
+                return  parseWorkloadData(response.getBody());
+
             }
         }
     }
 
     @ShellMethod(key = "add-member", value = "Add member to project")
-    public String addMember(String userId, String projectName){
+    public String addMember(
+            @ShellOption(value = "--userId", help = "The name of the user") String userId,
+            @ShellOption(value = "--projectName", help = "The name of the project") String projectName,
+            @ShellOption(value = "--role", defaultValue = "Developer", help = "The role of the user") String role) {
         if(api.authenticate()){
             return "You must login first.";
         }else{
@@ -268,15 +273,18 @@ public class ProjectCommand {
                 return projectId;
             }else {
                 var params = new HashMap<String, Object>();
-                params.put("userId", userId);
-                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST, "projects/add_member" + projectId, params);
+                params.put("role", role);
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST, "projects/"+ projectId+"/add_member/"+userId, params);
                 return response.getBody();
             }
         }
     }
 
     @ShellMethod(key = "remove-member", value = "Remove member to project")
-    public String removeMember(String userId, String projectName){
+    public String removeMember(
+            @ShellOption(value = "--userId", help = "The name of the user") String userId,
+            @ShellOption(value = "--projectName", help = "The name of the project") String projectName
+    ){
         if(api.authenticate()){
             return "You must login first.";
         }else{
@@ -285,8 +293,7 @@ public class ProjectCommand {
                 return projectId;
             }else {
                 var params = new HashMap<String, Object>();
-                params.put("userId", userId);
-                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST, "projects/remove_member" + projectId, params);
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.DELETE, "projects/"+ projectId+"/remove_member/"+userId, params);
                 return response.getBody();
             }
         }
@@ -297,6 +304,39 @@ public class ProjectCommand {
         params.put("projectName", projectName);
         ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/uuid", params);
         return response.getBody();
+    }
+
+    private String parseWorkloadData(String response) {
+        StringBuilder result = new StringBuilder();
+        JSONArray usersArray = new JSONArray(response);
+
+        for (int i = 0; i < usersArray.length(); i++) {
+            JSONObject userObject = usersArray.getJSONObject(i);
+            JSONObject user = userObject.getJSONObject("user");
+            String userName = user.getString("userName");
+            double workLoad = user.getDouble("workLoad");
+
+            result.append("User: ").append(userName).append(" (Workload: ").append(workLoad).append(" hours)\n");
+            result.append("Tasks to assign:\n");
+
+            JSONArray tasksArray = userObject.getJSONArray("tasks");
+
+            for (int j = 0; j < tasksArray.length(); j++) {
+                JSONObject task = tasksArray.getJSONObject(j);
+                String taskName = task.getString("taskName");
+                String taskId = task.getString("taskId");
+                double estimatedRemainingTime = task.getDouble("estimatedRemainingTime");
+
+                result.append("  - Task Name: ").append(taskName).append("\n");
+                result.append("    Task ID: ").append(taskId).append("\n");
+                result.append("    Estimated Remaining Time: ").append(estimatedRemainingTime).append(" hours\n");
+                result.append("\n");
+            }
+
+            result.append("=".repeat(50)).append("\n");
+        }
+
+        return result.toString();
     }
 
     @ShellMethod(key = "complete-project", value = "Complete a specific project")

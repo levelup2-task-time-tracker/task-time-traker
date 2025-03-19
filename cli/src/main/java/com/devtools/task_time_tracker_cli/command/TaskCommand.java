@@ -21,7 +21,8 @@ public class TaskCommand {
             @ShellOption(value = "--name", help = "The name of the task") String name,
             @ShellOption(value = "--description", help = "Short description of the task") String description,
             @ShellOption(value = "--point", help = "The story points for the task") String points,
-            @ShellOption(value = "--projectName", help = "The name of the project") String projectName
+            @ShellOption(value = "--projectName", help = "The name of the project") String projectName,
+            @ShellOption(value = "--role", help = "The role type of the project", defaultValue = "Developer") String role
     ) {
         if(api.authenticate()){
             return "You must login first.";
@@ -35,6 +36,7 @@ public class TaskCommand {
             params.put("description", description);
             params.put("storyPoints", points);
             params.put("projectId", projectId);
+            params.put("role", role);
             ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"tasks", params);
             return response.getBody();
             }
@@ -46,7 +48,8 @@ public class TaskCommand {
             @ShellOption(value = "--taskName", help = "The name of the task") String taskName,
             @ShellOption(value = "--description", help = "New short description of the task") String description,
             @ShellOption(value = "--points", help = "The new story points for the task") String points,
-            @ShellOption(value = "--newName", help = "The new name of the task") String newName
+            @ShellOption(value = "--newName", help = "The new name of the task") String newName,
+            @ShellOption(value = "--role", help = "The role type of the project", defaultValue = "Developer") String role
     ){
         if(api.authenticate()){
             return "You must login first.";
@@ -59,6 +62,7 @@ public class TaskCommand {
                 params.put("name", newName);
                 params.put("description", description);
                 params.put("storyPoints", points);
+                params.put("role", role);
                 ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"tasks/" + taskId, params);
                 return response.getBody();
             }

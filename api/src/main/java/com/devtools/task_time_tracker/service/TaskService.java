@@ -33,24 +33,25 @@ public class TaskService {
     @Autowired
     private SharedFunctions sharedFunctions;
 
-    public TaskModel createTask(String description, String name, Long storyPoints, UUID projectId) throws ResponseStatusException{
+    public TaskModel createTask(String description, String name, Long storyPoints, UUID projectId, String roleName) throws ResponseStatusException{
         ProjectModel project = sharedFunctions.findProject(projectId);
         UserModel user = sharedFunctions.getLoggedInUser();
         sharedFunctions.verifyUser(user, project);
-        TaskModel task = new TaskModel(description, name, storyPoints, project);
+        RoleModel role = sharedFunctions.findRole(roleName);
+        TaskModel task = new TaskModel(description, name, storyPoints, project, role);
         return taskRepository.save(task);
     }
 
-    public  TaskModel updateTask(UUID taskId, String newDescription, String newName, Long storyPoints) throws ResponseStatusException{
-        Optional<TaskModel> taskModelOptional = taskRepository.findById(taskId);
-        if (taskModelOptional.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
-        }
-        TaskModel task = taskModelOptional.get();
+    public  TaskModel updateTask(UUID taskId, String newDescription, String newName, Long storyPoints, String roleName) throws ResponseStatusException{
+        TaskModel task = sharedFunctions.verifyUserTask(taskId, null);
         ProjectModel project = sharedFunctions.findProject(task.getProject().getProjectId());
         UserModel user = sharedFunctions.getLoggedInUser();
         sharedFunctions.verifyUser(user, project);
 
+        if (roleName != null){
+            RoleModel role = sharedFunctions.findRole(roleName);
+            task.setRoleType(role);
+        }
         if (newDescription != null){
             task.setDescription(newDescription);
         }
@@ -65,11 +66,7 @@ public class TaskService {
     }
 
     public Boolean deleteTask(UUID taskId) {
-        Optional<TaskModel> taskModelOptional = taskRepository.findById(taskId);
-        if (taskModelOptional.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
-        }
-        TaskModel task = taskModelOptional.get();
+        TaskModel task = sharedFunctions.verifyUserTask(taskId, null);
         ProjectModel project = sharedFunctions.findProject(task.getProject().getProjectId());
         UserModel user = sharedFunctions.getLoggedInUser();
         sharedFunctions.verifyUser(user, project);
@@ -83,13 +80,7 @@ public class TaskService {
 
     public Map<String, Object> completeTask(UUID taskId) throws ResponseStatusException{
         Map<String, Object> response = new HashMap<>();
-
-
-        Optional<TaskModel> taskModelOptional = taskRepository.findById(taskId);
-        if (taskModelOptional.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
-        }
-        TaskModel task = taskModelOptional.get();
+        TaskModel task = sharedFunctions.verifyUserTask(taskId, null);
 
         if (task.getCompletedAt() != null) {
             response.put("success", false);

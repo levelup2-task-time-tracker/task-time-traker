@@ -5,7 +5,9 @@ import com.devtools.task_time_tracker.model.ProjectModel;
 import com.devtools.task_time_tracker.model.RoleModel;
 import com.devtools.task_time_tracker.model.UserModel;
 import com.devtools.task_time_tracker.workload_balancer.User;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -20,7 +22,6 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMemberMode
     Optional<ProjectMemberModel> findByUserAndProjectAndRole(UserModel user, ProjectModel project, RoleModel role);
     List<ProjectMemberModel> findByUserAndRole(UserModel user, RoleModel role);
     List<ProjectMemberModel> findByProject(ProjectModel project);
-    void deleteByUserAndProject(UserModel userModel, ProjectModel project);
     List<ProjectMemberModel> findByUser(UserModel user);
     @Query(value = "SELECT au.user_id, au.name, " +
             "COALESCE(SUM(EXTRACT(EPOCH FROM (tl.end_date_time - tl.start_date_time)) / 3600), 0) AS workLoad " +
@@ -44,6 +45,12 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMemberMode
             "HAVING tl.task_id IS NULL OR COALESCE(t.story_points - SUM(EXTRACT(EPOCH FROM (tl.end_date_time - tl.start_date_time)) / 3600), t.story_points) <> 0",
             nativeQuery = true)
     List<Object> sumByTask(@Param("projectId") UUID projectId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM project_member WHERE user_id = :userId AND project_id = :projectId", nativeQuery = true)
+    void deleteByUserAndProject(@Param("userId") UUID userId, @Param("projectId") UUID projectId);
+
 
 
 }
