@@ -26,6 +26,10 @@ public class ProjectModel {
         this.completedAt = completedAt;
     }
 
+    public LocalDateTime getCompletedAt() {
+        return this.completedAt;
+    }
+
     public String getDescription() {
         return description;
     }

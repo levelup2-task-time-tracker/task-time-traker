@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.devtools.task_time_tracker.utils.SharedFunctions.*;
@@ -95,7 +96,6 @@ public class ProjectService {
         projectRepository.delete(project);
         return true;
     }
-
 
     public Boolean addMember(UUID projectId, UUID userId, String role) throws ResponseStatusException{
         UserModel user = getLoggedInUser(userRepository);
@@ -221,5 +221,33 @@ public class ProjectService {
 
     public String getUuidFromName(String projectName){
         return getProjectUuid(projectRepository, projectName).toString();
+    }
+
+    public Map<String, Object> completeProject(UUID projectId) throws ResponseStatusException{
+        List<TaskModel> tasks = getTasks(projectId);
+        boolean allTasksCompleted = tasks.stream().allMatch(task -> task.getCompletedAt() != null);
+        Map<String, Object> response = new HashMap<>();
+
+        if (allTasksCompleted) {
+            ProjectModel project = findProject(projectId, projectRepository);
+
+            if (project.getCompletedAt() != null) {
+                response.put("success", false);
+                response.put("message", "Project already completed");
+            } else {
+
+                project.setCompletedAt(LocalDateTime.now());
+
+                projectRepository.save(project);
+
+                response.put("success", true);
+                response.put("message", "Completed project");
+            }
+        } else {
+            response.put("success", false);
+            response.put("message", "Not all tasks in project are completed");
+        }
+
+        return response;
     }
 }

@@ -101,16 +101,16 @@ public class ProjectServiceTest {
 //        Boolean result = projectService.deleteProject(project.getProjectId());
 //
 //        assertTrue(result);
-//        assertNotNull(project.getDeletedAt());
+//        assertNotNull(project.getCompletedAt());
     }
 
     @Test
     void testRestoreProject() {
-//        project.setDeletedAt(LocalDateTime.now());
+//        project.setCompletedAt(LocalDateTime.now());
 //
 //        Boolean result = projectService.restoreProject(project.getProjectId());
 //
 //        assertTrue(result);
-//        assertNull(project.getDeletedAt());
+//        assertNull(project.getCompletedAt());
     }
 }

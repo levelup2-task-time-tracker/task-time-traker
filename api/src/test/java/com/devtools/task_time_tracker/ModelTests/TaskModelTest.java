@@ -16,18 +16,18 @@ public class TaskModelTest {
 
     private TaskModel task;
     private UUID taskId;
-    private LocalDateTime deletedAt;
+    private LocalDateTime completedAt;
 
     @BeforeEach
     void setUp() {
         taskId = UUID.randomUUID();
-        deletedAt = LocalDateTime.now();
+        completedAt = LocalDateTime.now();
         task = new TaskModel();
         task.setTaskId(taskId);
         task.setName("Test Task");
         task.setDescription("Test Description");
         task.setStoryPoints(5L);
-        task.setDeletedAt(deletedAt);
+        task.setCompletedAt(completedAt);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class TaskModelTest {
         assertEquals("Test Task", task.getName());
         assertEquals("Test Description", task.getDescription());
         assertEquals(5L, task.getStoryPoints());
-        assertEquals(deletedAt, task.getDeletedAt());
+        assertEquals(completedAt, task.getCompletedAt());
         assertEquals(project, task.getProject());
 //        assertEquals(user, task.getUser());
     }

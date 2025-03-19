@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -139,5 +140,12 @@ public class ProjectController {
         }catch (ResponseStatusException e){
             return ResponseEntity.ok(e.getLocalizedMessage());
         }
+    }
+
+    @PostMapping("/{projectId}/complete")
+    public ResponseEntity<Map<String, Object>> completeProject(
+            @PathVariable UUID projectId
+    ) {
+        return ResponseEntity.ok(projectService.completeProject(projectId));
     }
 }
