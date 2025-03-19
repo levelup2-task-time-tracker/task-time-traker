@@ -1,20 +1,18 @@
-package com.devtools.task_time_tracker.service;
+package com.devtools.task_time_tracker.ServiceTests;
 
 import com.devtools.task_time_tracker.dts.AssignmentDto;
 import com.devtools.task_time_tracker.model.ProjectModel;
 import com.devtools.task_time_tracker.repository.ProjectMemberRepository;
 import com.devtools.task_time_tracker.repository.ProjectRepository;
 import com.devtools.task_time_tracker.repository.TaskRepository;
+import com.devtools.task_time_tracker.service.GeneticAlgorithmService;
 import com.devtools.task_time_tracker.workload_balancer.Chromosome;
 import com.devtools.task_time_tracker.workload_balancer.GeneticAlgorithm;
-import com.devtools.task_time_tracker.workload_balancer.Task;
-import com.devtools.task_time_tracker.workload_balancer.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;

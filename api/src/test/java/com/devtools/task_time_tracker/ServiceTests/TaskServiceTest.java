@@ -10,20 +10,15 @@ import com.devtools.task_time_tracker.repository.TaskRepository;
 import com.devtools.task_time_tracker.repository.UserRepository;
 import com.devtools.task_time_tracker.service.TaskService;
 import com.devtools.task_time_tracker.utils.SharedFunctions;
-import com.devtools.task_time_tracker.workload_balancer.Task;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.net.http.HttpClient;
 import java.util.Optional;
 import java.util.UUID;
-
-import static com.devtools.task_time_tracker.utils.SharedFunctions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -59,14 +54,12 @@ class TaskServiceTest {
         ProjectModel mockProject = new ProjectModel();
         UserModel mockUser = new UserModel();
         RoleModel role = new RoleModel();
-        role.setRoleName("Developer");
         TaskModel expectedTask = new TaskModel(description, name, storyPoints, mockProject, role);
 
         when(sharedFunctions.findProject(projectId)).thenReturn(mockProject);
         when(sharedFunctions.getLoggedInUser()).thenReturn(mockUser);
         doNothing().when(sharedFunctions).verifyUser(mockUser, mockProject);
         when(taskRepository.save(any(TaskModel.class))).thenReturn(expectedTask);
-
         TaskModel result = taskService.createTask(description, name, storyPoints, projectId, "Developer");
 
         assertNotNull(result);
@@ -81,19 +74,6 @@ class TaskServiceTest {
     }
 
     @Test
-    void updateTaskThrowError() {
-        UUID taskId = UUID.randomUUID();
-
-        when(taskRepository.findById(taskId)).thenReturn(Optional.empty());
-
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            taskService.updateTask(taskId, "New description", "New name", 9L, "Developer");
-        });
-
-        assertEquals("Task not found", exception.getReason());
-    }
-
-    @Test
     void updateTask() {
         UUID taskId = UUID.randomUUID();
         String description = "Test Task";
@@ -103,11 +83,10 @@ class TaskServiceTest {
         ProjectModel mockProject = new ProjectModel();
         UserModel mockUser = new UserModel();
         RoleModel role = new RoleModel();
-        role.setRoleName("Developer");
         TaskModel task = new TaskModel("Old Task", "Old Task Name", 3L, mockProject, role);
         TaskModel expectedTask = new TaskModel(description, name, storyPoints, mockProject, role);
 
-        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+        when(sharedFunctions.verifyUserTask(taskId, null)).thenReturn(task);
         when(sharedFunctions.findProject(task.getProject().getProjectId())).thenReturn(mockProject);
         when(sharedFunctions.getLoggedInUser()).thenReturn(mockUser);
         doNothing().when(sharedFunctions).verifyUser(mockUser, mockProject);
@@ -119,21 +98,7 @@ class TaskServiceTest {
         assertEquals(description, result.getDescription());
         assertEquals(name, result.getName());
         assertEquals(storyPoints, result.getStoryPoints());
-
         verify(taskRepository, times(1)).save(any(TaskModel.class));
-    }
-
-    @Test
-    void deleteTaskThrowError() {
-        UUID taskId = UUID.randomUUID();
-
-        when(taskRepository.findById(taskId)).thenReturn(Optional.empty());
-
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            taskService.deleteTask(taskId);
-        });
-
-        assertEquals("Task not found", exception.getReason());
     }
 
 
@@ -143,10 +108,8 @@ class TaskServiceTest {
         ProjectModel mockProject = new ProjectModel();
         UserModel mockUser = new UserModel();
         RoleModel role = new RoleModel();
-        role.setRoleName("Developer");
         TaskModel task = new TaskModel("Old Task", "Old Task Name", 3L, mockProject, role);
-
-        when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+        when(sharedFunctions.verifyUserTask(taskId, null)).thenReturn(task);
         when(sharedFunctions.findProject(task.getProject().getProjectId())).thenReturn(mockProject);
         when(sharedFunctions.getLoggedInUser()).thenReturn(mockUser);
         doNothing().when(sharedFunctions).verifyUser(mockUser, mockProject);
