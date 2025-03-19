@@ -5,6 +5,7 @@ import com.devtools.task_time_tracker.repository.ProjectMemberRepository;
 import com.devtools.task_time_tracker.repository.ProjectRepository;
 import com.devtools.task_time_tracker.repository.TaskRepository;
 import com.devtools.task_time_tracker.repository.UserRepository;
+import com.devtools.task_time_tracker.utils.SharedFunctions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,13 +30,15 @@ public class TaskService {
     @Autowired
     private ProjectMemberRepository projectMemberRepository;
 
+    @Autowired
+    private SharedFunctions sharedFunctions;
+
     public TaskModel createTask(String description, String name, Long storyPoints, UUID projectId) throws ResponseStatusException{
-        ProjectModel project = findProject(projectId, projectRepository);
-        UserModel user = getLoggedInUser(userRepository);
-        verifyUser(user, project, projectMemberRepository);
+        ProjectModel project = sharedFunctions.findProject(projectId);
+        UserModel user = sharedFunctions.getLoggedInUser();
+        sharedFunctions.verifyUser(user, project);
         TaskModel task = new TaskModel(description, name, storyPoints, project);
-        taskRepository.save(task);
-        return task;
+        return taskRepository.save(task);
     }
 
     public  TaskModel updateTask(UUID taskId, String newDescription, String newName, Long storyPoints) throws ResponseStatusException{
@@ -44,9 +47,9 @@ public class TaskService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
         }
         TaskModel task = taskModelOptional.get();
-        ProjectModel project = findProject(task.getProject().getProjectId(), projectRepository);
-        UserModel user = getLoggedInUser(userRepository);
-        verifyUser(user, project, projectMemberRepository);
+        ProjectModel project = sharedFunctions.findProject(task.getProject().getProjectId());
+        UserModel user = sharedFunctions.getLoggedInUser();
+        sharedFunctions.verifyUser(user, project);
 
         if (newDescription != null){
             task.setDescription(newDescription);
@@ -67,15 +70,15 @@ public class TaskService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
         }
         TaskModel task = taskModelOptional.get();
-        ProjectModel project = findProject(task.getProject().getProjectId(), projectRepository);
-        UserModel user = getLoggedInUser(userRepository);
-        verifyUser(user, project, projectMemberRepository);
+        ProjectModel project = sharedFunctions.findProject(task.getProject().getProjectId());
+        UserModel user = sharedFunctions.getLoggedInUser();
+        sharedFunctions.verifyUser(user, project);
         taskRepository.delete(task);
         return true;
     }
 
     public String getUuid(String taskName){
-        return getUserTaskUuid(projectMemberRepository, taskRepository, taskName, getLoggedInUser(userRepository)).toString();
+        return sharedFunctions.getUserTaskUuid(taskName, sharedFunctions.getLoggedInUser()).toString();
     }
 
     public Map<String, Object> completeTask(UUID taskId) throws ResponseStatusException{
