@@ -7,5 +7,3 @@ FOREIGN KEY (role_id)
 REFERENCES role(role_id);
 
 DROP TABLE user_role;
-
-INSERT INTO role(role_name) VALUES ('Manager');

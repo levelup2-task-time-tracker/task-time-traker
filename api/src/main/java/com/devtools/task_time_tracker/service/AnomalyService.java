@@ -1,23 +1,23 @@
 package com.devtools.task_time_tracker.service;
 
-import com.devtools.task_time_tracker.model.TimeLogModel;
-import com.devtools.task_time_tracker.model.UserModel;
-import com.devtools.task_time_tracker.repository.TaskRepository;
-import com.devtools.task_time_tracker.repository.TimeLogRepository;
-import com.devtools.task_time_tracker.repository.UserRepository;
+import com.devtools.task_time_tracker.model.*;
+import com.devtools.task_time_tracker.repository.*;
+import com.devtools.task_time_tracker.workload_balancer.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import static com.devtools.task_time_tracker.utils.SharedFunctions.*;
 
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.ArrayList;
 
 @Service
 public class AnomalyService {
@@ -31,7 +31,15 @@ public class AnomalyService {
     @Autowired
     private UserRepository userRepository;
 
-    @Scheduled(fixedRate = 60000)
+    @Autowired
+    private ProjectMemberRepository projectMemberRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired ProjectRepository projectRepository;
+
+    @Scheduled(fixedRate = 3000000)
     public void runDetectAnomalies(){
         detectAnomalies();
     }
@@ -39,6 +47,26 @@ public class AnomalyService {
 
     public List<String> getAnomalyLogs() {
         return anomalyLogs;
+    }
+
+    public List<String> getProjectAnomalyLogs() {
+        UserModel user = getLoggedInUser(userRepository);
+        RoleModel role = findRole("Manager", roleRepository);
+        Optional<ProjectMemberModel> memberRole = projectMemberRepository.findByUserAndRole(user, role);
+
+        if (memberRole.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not a project manager");
+        }
+
+        List<ProjectModel> projects = projectRepository.findByUser(user.getUserId());
+        Set<String> memberNames = projects.stream()
+                .flatMap(project -> projectMemberRepository.findByProject(project).stream())
+                .map(member -> member.getUser().getName())
+                .collect(Collectors.toSet());
+
+        return anomalyLogs.stream()
+                .filter(log -> memberNames.stream().anyMatch(log::contains))
+                .collect(Collectors.toList());
     }
 
     private void detectAnomalies() {
@@ -61,7 +89,6 @@ public class AnomalyService {
     public void logAnomaly(UserModel user, String type, String details) {
         String alert = "[Anomaly Alert] " + user.getName() + " - " + type + ": " + details;
         anomalyLogs.add(alert);
-        System.out.println(alert);
     }
 
     public void checkStreaks(Map<LocalDateTime, Duration> dailyTimeWorked, UserModel user){

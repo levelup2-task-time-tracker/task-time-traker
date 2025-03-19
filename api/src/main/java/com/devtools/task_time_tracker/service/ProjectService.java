@@ -218,4 +218,8 @@ public class ProjectService {
     public List<ProjectModel> getAll() {
         return projectRepository.findAll();
     }
+
+    public String getUuidFromName(String projectName){
+        return getProjectUuid(projectRepository, projectName).toString();
+    }
 }

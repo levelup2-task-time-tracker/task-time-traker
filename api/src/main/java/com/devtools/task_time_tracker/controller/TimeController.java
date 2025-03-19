@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -19,6 +20,9 @@ public class TimeController {
 
     @Autowired
     private TimeService timeService;
+
+    @Autowired
+    private AnomalyService anomalyService;
 
     @PostMapping("/{taskId}/start")
     public ResponseEntity<String> startTime(
@@ -57,5 +61,10 @@ public class TimeController {
         }catch (ResponseStatusException e){
             return ResponseEntity.ok(e.getLocalizedMessage());
         }
+    }
+
+    @GetMapping("/anomalies")
+    public ResponseEntity<List<String>> getAnomalies(@AuthenticationPrincipal OAuth2User user){
+        return ResponseEntity.ok(anomalyService.getProjectAnomalyLogs());
     }
 }

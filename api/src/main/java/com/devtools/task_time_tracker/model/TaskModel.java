@@ -40,12 +40,12 @@ public class TaskModel {
         this.storyPoints = storyPoints;
     }
 
-    public LocalDateTime getDeletedAt() {
-        return deletedAt;
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
     }
 
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
+    public void setCompletedAt(LocalDateTime completedAt) {
+        this.completedAt = completedAt;
     }
 
     public ProjectModel getProject() {
@@ -91,8 +91,8 @@ public class TaskModel {
     @JoinColumn(name = "project_id")
     private ProjectModel project;
 
-    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
-    private LocalDateTime deletedAt;
+    @Column(name = "completed_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime completedAt;
 
     @Column(name = "story_points", columnDefinition = "TIMESTAMP")
     private Long storyPoints;
