@@ -3,7 +3,7 @@ name: Build and Package CLI
 on:
   push:
     branches:
-      - feat/testing
+      - main
   pull_request:
     branches:
       - main
