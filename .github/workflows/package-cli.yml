@@ -58,6 +58,8 @@ jobs:
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_name: Release CLI
           draft: false
@@ -71,3 +73,5 @@ jobs:
           asset_path: task-time-tracker-cli.jar
           asset_name: task-time-tracker-cli.jar
           asset_content_type: application/jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -5,12 +5,10 @@ on:
     branches:
       - main
       - development
-      - feat/testing
   pull_request:
     branches:
       - main
       - development
-      - feat/testing
 
 jobs:
   api-test:
