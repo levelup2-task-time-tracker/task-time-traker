@@ -7,6 +7,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class TaskTimeTrackerCliApplication {
 
 	public static void main(String[] args) {
+
+		String logo = """
+					████████  █████  ███████ ██   ██     ████████ ██ ███    ███ ███████     ████████ ██████   █████   ██████ ██   ██ ███████ ██████
+					   ██    ██   ██ ██      ██  ██         ██    ██ ████  ████ ██             ██    ██   ██ ██   ██ ██      ██  ██  ██      ██   ██
+					   ██    ███████ ███████ █████          ██    ██ ██ ████ ██ █████          ██    ██████  ███████ ██      █████   █████   ██████
+					   ██    ██   ██      ██ ██  ██         ██    ██ ██  ██  ██ ██             ██    ██   ██ ██   ██ ██      ██  ██  ██      ██   ██
+					   ██    ██   ██ ███████ ██   ██        ██    ██ ██      ██ ███████        ██    ██   ██ ██   ██  ██████ ██   ██ ███████ ██   ██
+				""";
+
+		System.out.println(logo);
 		SpringApplication.run(TaskTimeTrackerCliApplication.class, args);
 	}
 
