@@ -38,7 +38,6 @@ public class ProjectService {
     @Transactional
     public ProjectModel createProject(String name, String description) throws ResponseStatusException{
         UserModel user = sharedFunctions.getLoggedInUser();
-        UUID projectId = UUID.randomUUID();
 
         ProjectModel project = new ProjectModel(name, description);
         projectRepository.save(project);
