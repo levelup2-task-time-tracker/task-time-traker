@@ -2,6 +2,7 @@ package com.devtools.task_time_tracker.service;
 
 import com.devtools.task_time_tracker.model.*;
 import com.devtools.task_time_tracker.repository.*;
+import com.devtools.task_time_tracker.utils.SharedFunctions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,8 +34,11 @@ public class TimeService {
     @Autowired
     private ProjectRepository projectRepository;
 
+    @Autowired
+    private SharedFunctions sharedFunctions;
+
     public TimeLogModel startTime(UUID taskId) throws ResponseStatusException{
-        UserModel user = getLoggedInUser(userRepository);
+        UserModel user = sharedFunctions.getLoggedInUser();
         verifyUserTask(taskId, user);
 
         TaskModel task = taskRepository
@@ -55,7 +59,7 @@ public class TimeService {
     }
 
     public TimeLogModel stopTime(UUID taskId) throws ResponseStatusException{
-        UserModel user = getLoggedInUser(userRepository);
+        UserModel user = sharedFunctions.getLoggedInUser();
         TaskModel task = verifyUserTask(taskId, user);
 
         List<TimeLogModel> timeLogModelOptional = timeLogRepository.findByUserAndTaskAndEndDateTimeIsNull(user, task);
@@ -87,15 +91,15 @@ public class TimeService {
 
     private TaskModel verifyUserTask(UUID taskId, UserModel user) throws RuntimeException {
         if (user == null) {
-            user = getLoggedInUser(userRepository);
+            user = sharedFunctions.getLoggedInUser();
         }
         Optional<TaskModel> taskModelOptional = taskRepository.findById(taskId);
         if (taskModelOptional.isEmpty()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
         }
         TaskModel task = taskModelOptional.get();
-        ProjectModel project = findProject(task.getProject().getProjectId(), projectRepository);
-        verifyUser(user, project, projectMemberRepository);
+        ProjectModel project = sharedFunctions.findProject(task.getProject().getProjectId());
+        sharedFunctions.verifyUser(user, project);
 
         return task;
     }
