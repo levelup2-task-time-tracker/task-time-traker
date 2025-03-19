@@ -56,7 +56,7 @@ public class AnomalyService {
     public List<String> getProjectAnomalyLogs() {
         UserModel user = sharedFunctions.getLoggedInUser();
         RoleModel role = sharedFunctions.findRole("Manager");
-        Optional<ProjectMemberModel> memberRole = projectMemberRepository.findByUserAndRole(user, role);
+        List<ProjectMemberModel> memberRole = projectMemberRepository.findByUserAndRole(user, role);
 
         if (memberRole.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not a project manager");
