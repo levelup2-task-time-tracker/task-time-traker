@@ -8,7 +8,7 @@ BEGIN
         INTO total_story_points
         FROM task
         WHERE project_id = project_id_input
-          AND deleted_at IS NOT NULL;
+          AND completed_at IS NOT NULL;
     ELSE
         SELECT COALESCE(SUM(story_points), 0)
         INTO total_story_points

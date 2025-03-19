@@ -22,8 +22,8 @@ public class ProjectModel {
     }
 
 
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
+    public void setCompletedAt(LocalDateTime completedAt) {
+        this.completedAt = completedAt;
     }
 
     public String getDescription() {
@@ -49,6 +49,6 @@ public class ProjectModel {
 
     @Column(columnDefinition = "TEXT")
     private String description;
-    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
-    private LocalDateTime deletedAt;
+    @Column(name = "completed_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime completedAt;
 }

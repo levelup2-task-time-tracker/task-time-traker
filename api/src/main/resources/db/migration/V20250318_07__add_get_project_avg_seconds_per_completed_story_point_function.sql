@@ -20,7 +20,7 @@ BEGIN
             time_log tl ON t.task_id = tl.task_id
         WHERE
             t.project_id = project_id_input
-            AND t.deleted_at IS NOT NULL
+            AND t.completed_at IS NOT NULL
         GROUP BY
             t.task_id, t.story_points
     ) AS task_time_data
