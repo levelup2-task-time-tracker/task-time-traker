@@ -39,7 +39,7 @@ public class TimeService {
 
     public TimeLogModel startTime(UUID taskId) throws ResponseStatusException{
         UserModel user = sharedFunctions.getLoggedInUser();
-        verifyUserTask(taskId, user);
+        sharedFunctions.verifyUserTask(taskId, user);
 
         TaskModel task = taskRepository
                 .findById(taskId)
@@ -60,7 +60,7 @@ public class TimeService {
 
     public TimeLogModel stopTime(UUID taskId) throws ResponseStatusException{
         UserModel user = sharedFunctions.getLoggedInUser();
-        TaskModel task = verifyUserTask(taskId, user);
+        TaskModel task = sharedFunctions.verifyUserTask(taskId, user);
 
         List<TimeLogModel> timeLogModelOptional = timeLogRepository.findByUserAndTaskAndEndDateTimeIsNull(user, task);
 
@@ -77,7 +77,7 @@ public class TimeService {
     }
 
     public Duration getTotalTime(UUID taskId) throws RuntimeException{
-        TaskModel task = verifyUserTask(taskId, null);
+        TaskModel task = sharedFunctions.verifyUserTask(taskId, null);
 
         List<TimeLogModel> timeLog = timeLogRepository.findByTask(task);
 
@@ -89,18 +89,5 @@ public class TimeService {
         return totalDuration;
     }
 
-    private TaskModel verifyUserTask(UUID taskId, UserModel user) throws RuntimeException {
-        if (user == null) {
-            user = sharedFunctions.getLoggedInUser();
-        }
-        Optional<TaskModel> taskModelOptional = taskRepository.findById(taskId);
-        if (taskModelOptional.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
-        }
-        TaskModel task = taskModelOptional.get();
-        ProjectModel project = sharedFunctions.findProject(task.getProject().getProjectId());
-        sharedFunctions.verifyUser(user, project);
 
-        return task;
-    }
 }
