@@ -40,3 +40,34 @@ jobs:
       with:
         name: task-time-tracker-cli
         path: ./cli/target/*.jar
+
+
+  release:
+    needs: build-cli
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download zip artifact from the build job
+        uses: actions/download-artifact@v4
+        with:
+          name: task-time-tracker-cli
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          release_name: Release CLI
+          draft: false
+          prerelease: false
+
+      # Upload production artifact to release
+      - name: Upload production artifact to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: task-time-tracker-cli.jar
+          asset_name: task-time-tracker-cli.jar
+          asset_content_type: application/jar
