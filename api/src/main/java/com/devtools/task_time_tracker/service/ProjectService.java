@@ -224,7 +224,7 @@ public class ProjectService {
     }
 
     public String getUuidFromName(String projectName){
-        return getProjectUuid(projectRepository, projectName).toString();
+        return sharedFunctions.getProjectUuid(projectName).toString();
     }
 
     public Map<String, Object> completeProject(UUID projectId) throws ResponseStatusException{
