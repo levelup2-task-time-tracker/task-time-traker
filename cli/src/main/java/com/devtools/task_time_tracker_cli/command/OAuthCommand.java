@@ -17,8 +17,8 @@ import java.net.URI;
 @ShellComponent
 public class OAuthCommand {
     private final AuthToken authToken;
-    private static final String AUTH_URL_ENDPOINT = "http://localhost:8080/auth/url";
-    private static final String AUTH_TOKEN_ENDPOINT = "http://localhost:8080/auth/callback";
+    private static final String AUTH_URL_ENDPOINT = "http://ec2-13-247-181-133.af-south-1.compute.amazonaws.com:8080/auth/url";
+    private static final String AUTH_TOKEN_ENDPOINT = "http://ec2-13-247-181-133.af-south-1.compute.amazonaws.com:8080/auth/callback";
     private final RestTemplate restTemplate = new RestTemplate();
 
     public OAuthCommand(AuthToken token) {

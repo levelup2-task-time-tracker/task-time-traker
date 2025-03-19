@@ -33,11 +33,11 @@ public class UserServiceTest {
 
     @Test
     public void getAllUsers(){
-//        List<UserModel> users = Arrays.asList(user1, user2);
-//        when(userRepository.findAll()).thenReturn(users);
-//        List<UserModel> result = userService.getAllUsers();
-//        assertEquals(2, result.size());
-//        assertEquals("John Doe", result.get(0).getSubject());
-//        assertEquals("Jane Smith", result.get(1).getSubject());
+        List<UserModel> users = Arrays.asList(user1, user2);
+        when(userRepository.findAll()).thenReturn(users);
+        List<UserModel> result = userService.getAllUsers();
+        assertEquals(2, result.size());
+        assertEquals("John Doe", result.get(0).getSubject());
+        assertEquals("Jane Smith", result.get(1).getSubject());
     }
 }

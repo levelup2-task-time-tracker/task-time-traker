@@ -20,7 +20,7 @@ import java.util.Map;
 
 @Service
 public class ApiService {
-    public static final String url = "http://localhost:8080/";
+    public static final String url = "http://ec2-13-247-181-133.af-south-1.compute.amazonaws.com:8080/";
 
     @Autowired
     private AuthToken token;

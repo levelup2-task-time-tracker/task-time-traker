@@ -55,6 +55,9 @@ public class GeneticAlgorithmService {
                 })
                 .toList();
 
+        if (tasks.isEmpty() || users.isEmpty()){
+            return new ArrayList<>();
+        }
         Random random = new Random(0L);
         GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(users, tasks, random, 0.6, 0.4, 50, 20);
         Chromosome bestChromosome = geneticAlgorithm.run();
