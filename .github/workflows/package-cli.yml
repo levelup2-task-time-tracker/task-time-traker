@@ -71,6 +71,9 @@ jobs:
           draft: false
           prerelease: false
 
+      - name: List target directory
+        run: ls -al target/
+
       # Upload production artifact to release
       - name: Upload production artifact to release
         uses: actions/upload-release-asset@v1
