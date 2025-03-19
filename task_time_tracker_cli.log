@@ -251,3 +251,9 @@
 1742383511176:public String greet(@ShellOption(value = "--name", required = false, help = "The name of the person to greet") String name) {
 1742383522878:}get-user-info 1 ttt
 1742383537336:get-user-info 1 ttt
+1742386441532:help
+1742386456095:login
+1742386461938:validate
+1742386473410:get-anomaly-logs
+1742387592162:help create-task
+1742387726714:get-anomaly-logs
