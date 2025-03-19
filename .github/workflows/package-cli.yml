@@ -55,6 +55,9 @@ jobs:
         with:
           name: task-time-tracker-cli
 
+      - name: List all
+        run: ls -al
+
       - name: Get Git Commit SHA
         id: get_sha
         run: echo "COMMIT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
@@ -71,15 +74,12 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: List target directory
-        run: ls -al ./cli/target/
-
       # Upload production artifact to release
       - name: Upload production artifact to release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./cli/target/*.jar
+          asset_path: task-time-tracker-cli
           asset_name: task-time-tracker-cli
           asset_content_type: application/jar
         env:
