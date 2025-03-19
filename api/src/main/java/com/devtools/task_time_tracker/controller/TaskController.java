@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -72,5 +73,12 @@ public class TaskController {
         }catch (ResponseStatusException e){
             return ResponseEntity.ok(e.getLocalizedMessage());
         }
+    }
+
+    @PostMapping("/{taskId}/complete")
+    public ResponseEntity<Map<String, Object>> completeTask(
+            @PathVariable UUID taskId
+    ) {
+        return ResponseEntity.ok(taskService.completeTask(taskId));
     }
 }

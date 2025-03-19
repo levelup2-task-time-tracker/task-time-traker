@@ -12,8 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import static com.devtools.task_time_tracker.utils.SharedFunctions.*;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class TaskService {
@@ -77,5 +76,31 @@ public class TaskService {
 
     public String getUuid(String taskName){
         return getUserTaskUuid(projectMemberRepository, taskRepository, taskName, getLoggedInUser(userRepository)).toString();
+    }
+
+    public Map<String, Object> completeTask(UUID taskId) throws ResponseStatusException{
+        Map<String, Object> response = new HashMap<>();
+
+
+        Optional<TaskModel> taskModelOptional = taskRepository.findById(taskId);
+        if (taskModelOptional.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
+        }
+        TaskModel task = taskModelOptional.get();
+
+        if (task.getCompletedAt() != null) {
+            response.put("success", false);
+            response.put("message", "Task already completed");
+        } else {
+            task.setCompletedAt(LocalDateTime.now());
+
+            taskRepository.save(task);
+
+            response.put("success", true);
+            response.put("message", "Completed project");
+        }
+
+
+        return response;
     }
 }

@@ -72,4 +72,18 @@ public class TaskCommand {
         return response.getBody();
     }
 
+    @ShellMethod(key = "complete-task", value = "Complete a specific task")
+    public String completeTask(String taskName){
+        if(api.authenticate()){
+            return "You must login first.";
+        }else{
+            String taskId = getTaskUuid(taskName);
+            if(taskId.contains("404")){
+                return taskId;
+            }else {
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST, "tasks/" + taskId + "/complete", new HashMap<>());
+                return response.getBody();
+            }
+        }
+    }
 }
