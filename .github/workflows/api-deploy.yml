@@ -51,8 +51,8 @@ jobs:
           DB_PASSWORD: ${{ env.DB_PASSWORD }}
           OAUTH2_ID: ${{ env.OAUTH2_ID }}
           OAUTH2_SECRET: ${{ env.OAUTH2_SECRET }}
-          host: ${{ secrets.EC2_PUBLIC_IP }}
         with:
+          host: ${{ secrets.EC2_PUBLIC_IP }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22  
