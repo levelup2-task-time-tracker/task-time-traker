@@ -39,4 +39,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: task-time-tracker-cli
-        path: target/*.jar
+        path: ./cli/target/*.jar
