@@ -260,9 +260,9 @@ public class ProjectCommand {
 
     @ShellMethod(key = "add-member", value = "Add member to project")
     public String addMember(
-            String userId,
-            String projectName,
-            @ShellOption(value = "--role", defaultValue = "Developer") String role) {
+            @ShellOption(value = "--userId", help = "The name of the user") String userId,
+            @ShellOption(value = "--projectName", help = "The name of the project") String projectName,
+            @ShellOption(value = "--role", defaultValue = "Developer", help = "The role of the user") String role) {
         if(api.authenticate()){
             return "You must login first.";
         }else{
@@ -279,7 +279,10 @@ public class ProjectCommand {
     }
 
     @ShellMethod(key = "remove-member", value = "Remove member to project")
-    public String removeMember(String userId, String projectName){
+    public String removeMember(
+            @ShellOption(value = "--userId", help = "The name of the user") String userId,
+            @ShellOption(value = "--projectName", help = "The name of the project") String projectName
+    ){
         if(api.authenticate()){
             return "You must login first.";
         }else{
