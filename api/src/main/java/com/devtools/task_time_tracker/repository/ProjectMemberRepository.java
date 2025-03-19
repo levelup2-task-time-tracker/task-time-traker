@@ -18,7 +18,7 @@ import java.util.UUID;
 public interface ProjectMemberRepository extends JpaRepository<ProjectMemberModel, Long> {
     Optional<ProjectMemberModel> findByUserAndProject(UserModel user, ProjectModel project);
     Optional<ProjectMemberModel> findByUserAndProjectAndRole(UserModel user, ProjectModel project, RoleModel role);
-    Optional<ProjectMemberModel> findByUserAndRole(UserModel user, RoleModel role);
+    List<ProjectMemberModel> findByUserAndRole(UserModel user, RoleModel role);
     List<ProjectMemberModel> findByProject(ProjectModel project);
     void deleteByUserAndProject(UserModel userModel, ProjectModel project);
     List<ProjectMemberModel> findByUser(UserModel user);
