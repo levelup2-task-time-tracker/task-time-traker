@@ -1,6 +1,8 @@
 package com.devtools.task_time_tracker.controller;
 
+import com.devtools.task_time_tracker.dts.AssignmentDto;
 import com.devtools.task_time_tracker.model.UserModel;
+import com.devtools.task_time_tracker.service.GeneticAlgorithmService;
 import com.devtools.task_time_tracker.service.ProjectService;
 import com.devtools.task_time_tracker.model.ProjectModel;
 import com.devtools.task_time_tracker.model.TaskModel;
@@ -23,6 +25,9 @@ public class ProjectController {
 
     @Autowired
     private ProjectService projectService;
+    @Autowired
+    private GeneticAlgorithmService geneticAlgorithmService;
+
     @PostMapping
     public ResponseEntity<ProjectModel> createProject(
             @RequestParam String description,
@@ -67,24 +72,29 @@ public class ProjectController {
         return ResponseEntity.ok(tasks);
     }
 
+    @GetMapping("{projectId}/suggestions")
+    public ResponseEntity<List<AssignmentDto>> getSuggestions(@PathVariable UUID projectId, @RequestParam(required = false, defaultValue = "Developer") String role) {
+        return ResponseEntity.ok(geneticAlgorithmService.getSuggestions(projectId, role));
+    }
+
     @DeleteMapping("/{projectId}")
     public ResponseEntity<Boolean> deleteProject(@PathVariable UUID projectId){
         return ResponseEntity.ok(projectService.deleteProject(projectId));
     }
 
-    @PostMapping("/{projectId}/add_member")
+    @PostMapping("/{projectId}/add_member/{userId}")
     public ResponseEntity<Boolean> addMember(
             @PathVariable UUID projectId,
-            @RequestParam UUID userId,
+            @PathVariable UUID userId,
             @RequestParam(required = false, defaultValue = "Developer") String role
     ) {
         return ResponseEntity.ok(projectService.addMember(projectId, userId, role));
     }
 
-    @DeleteMapping("/{projectId}/remove_member")
+    @DeleteMapping("/{projectId}/remove_member/{userId}")
     public ResponseEntity<Boolean> removeMember(
             @PathVariable UUID projectId,
-            @RequestParam UUID userId
+            @PathVariable UUID userId
     ) {
         return ResponseEntity.ok(projectService.removeMember(projectId, userId));
     }

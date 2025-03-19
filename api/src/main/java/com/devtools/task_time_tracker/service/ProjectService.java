@@ -104,8 +104,12 @@ public class ProjectService {
         UserModel user = sharedFunctions.getLoggedInUser();
         ProjectModel project = sharedFunctions.findProject(projectId);
         verifyManager(user, project);
-        UserModel userToAdd = sharedFunctions.findUser(projectId);
+        UserModel userToAdd = sharedFunctions.findUser(userId);
         RoleModel userRole = sharedFunctions.findRole(role);
+        Optional<ProjectMemberModel> projectMemberModelOptional = projectMemberRepository.findByUserAndProject(userToAdd, project);
+        if (projectMemberModelOptional.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are already part of project");
+        }
         ProjectMemberModel projectMember = new ProjectMemberModel(project, userToAdd, userRole);
         projectMemberRepository.save(projectMember);
 
@@ -116,8 +120,7 @@ public class ProjectService {
         UserModel user = sharedFunctions.getLoggedInUser();
         ProjectModel project = sharedFunctions.findProject(projectId);
         verifyManager(user, project);
-        UserModel userToRemove = sharedFunctions.findUser(projectId);
-        projectMemberRepository.deleteByUserAndProject(userToRemove, project);
+        projectMemberRepository.deleteByUserAndProject(userId, projectId);
 
         return true;
     }

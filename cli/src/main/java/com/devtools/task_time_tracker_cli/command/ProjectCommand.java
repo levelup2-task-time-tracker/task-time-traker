@@ -252,14 +252,17 @@ public class ProjectCommand {
                 return projectId;
             }else {
                 var params = new HashMap<String, Object>();
-                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET, "projects/suggestions" + projectId, params);
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET, "projects/"+projectId+"/suggestions", params);
                 return response.getBody();
             }
         }
     }
 
     @ShellMethod(key = "add-member", value = "Add member to project")
-    public String addMember(String userId, String projectName){
+    public String addMember(
+            String userId,
+            String projectName,
+            @ShellOption(value = "--role", defaultValue = "Developer") String role) {
         if(api.authenticate()){
             return "You must login first.";
         }else{
@@ -268,8 +271,8 @@ public class ProjectCommand {
                 return projectId;
             }else {
                 var params = new HashMap<String, Object>();
-                params.put("userId", userId);
-                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST, "projects/add_member" + projectId, params);
+                params.put("role", role);
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST, "projects/"+ projectId+"/add_member/"+userId, params);
                 return response.getBody();
             }
         }
@@ -285,8 +288,7 @@ public class ProjectCommand {
                 return projectId;
             }else {
                 var params = new HashMap<String, Object>();
-                params.put("userId", userId);
-                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST, "projects/remove_member" + projectId, params);
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.DELETE, "projects/"+ projectId+"/remove_member/"+userId, params);
                 return response.getBody();
             }
         }
