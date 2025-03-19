@@ -1,4 +1,4 @@
-package com.devtools.task_time_tracker.service;
+package com.devtools.task_time_tracker.ServiceTests;
 
 import com.devtools.task_time_tracker.model.TaskModel;
 import com.devtools.task_time_tracker.model.TimeLogModel;
@@ -6,6 +6,7 @@ import com.devtools.task_time_tracker.model.UserModel;
 import com.devtools.task_time_tracker.repository.TaskRepository;
 import com.devtools.task_time_tracker.repository.TimeLogRepository;
 import com.devtools.task_time_tracker.repository.UserRepository;
+import com.devtools.task_time_tracker.service.AnomalyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,8 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;

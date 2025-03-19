@@ -21,16 +21,8 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-    @Autowired
-    private GeneticAlgorithmService geneticAlgorithmService;
-
     public TaskController(TaskService taskService) {
         this.taskService = taskService;
-    }
-
-    @GetMapping("/suggestions/{projectId}")
-    public ResponseEntity<List<AssignmentDto>> getSuggestions(@PathVariable UUID projectId, @RequestParam(required = false, defaultValue = "Developer") String role) {
-        return ResponseEntity.ok(geneticAlgorithmService.getSuggestions(projectId, role));
     }
 
     @PostMapping
@@ -38,9 +30,10 @@ public class TaskController {
             @RequestParam String description,
             @RequestParam String name,
             @RequestParam Long storyPoints,
-            @RequestParam UUID projectId
+            @RequestParam UUID projectId,
+            @RequestParam(required = false, defaultValue = "Developer") String role
     ) {
-        TaskModel task = taskService.createTask(description, name, storyPoints, projectId);
+        TaskModel task = taskService.createTask(description, name, storyPoints, projectId, role);
 
         return ResponseEntity.ok(task);
     }
@@ -51,9 +44,9 @@ public class TaskController {
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long storyPoints,
-            @RequestParam(required = false) UUID projectId
+            @RequestParam(required = false) String role
     ) {
-        TaskModel task = taskService.updateTask(taskId, description, name, storyPoints);
+        TaskModel task = taskService.updateTask(taskId, description, name, storyPoints, role);
 
         return ResponseEntity.ok(task);
     }

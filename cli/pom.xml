@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.devtools</groupId>
 	<artifactId>task_time_tracker_cli</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>task_time_tracker_cli</name>
 	<description>CLI for Task Time Tracker</description>
 	<url/>

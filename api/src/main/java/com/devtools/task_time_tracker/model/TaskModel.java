@@ -17,11 +17,12 @@ public class TaskModel {
 
     public TaskModel(){}
 
-    public TaskModel(String description, String name, Long storyPoints, ProjectModel project){
+    public TaskModel(String description, String name, Long storyPoints, ProjectModel project, RoleModel role){
         this.description = description;
         this.name = name;
         this.storyPoints = storyPoints;
         this.project = project;
+        this.roleType = role;
     }
 
     public String getDescription() {
