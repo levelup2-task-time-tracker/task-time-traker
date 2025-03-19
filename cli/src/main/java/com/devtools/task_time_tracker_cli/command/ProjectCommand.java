@@ -295,4 +295,19 @@ public class ProjectCommand {
         return response.getBody();
     }
 
+    @ShellMethod(key = "complete-project", value = "Complete a specific project")
+    public String completeProject(String projectName){
+        if(api.authenticate()){
+            return "You must login first.";
+        }else{
+            String projectId = getProjectUuid(projectName);
+            if(projectId.contains("404")){
+                return projectId;
+            }else{
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"projects/" + projectId + "/complete", new HashMap<>());
+                return response.getBody();
+            }
+        }
+    }
+
 }

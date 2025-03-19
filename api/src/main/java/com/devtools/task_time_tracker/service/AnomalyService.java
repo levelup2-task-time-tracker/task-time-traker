@@ -2,6 +2,7 @@ package com.devtools.task_time_tracker.service;
 
 import com.devtools.task_time_tracker.model.*;
 import com.devtools.task_time_tracker.repository.*;
+import com.devtools.task_time_tracker.utils.SharedFunctions;
 import com.devtools.task_time_tracker.workload_balancer.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,9 @@ public class AnomalyService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private SharedFunctions sharedFunctions;
+
     @Autowired ProjectRepository projectRepository;
 
     @Scheduled(fixedRate = 3000000)
@@ -50,8 +54,8 @@ public class AnomalyService {
     }
 
     public List<String> getProjectAnomalyLogs() {
-        UserModel user = getLoggedInUser(userRepository);
-        RoleModel role = findRole("Manager", roleRepository);
+        UserModel user = sharedFunctions.getLoggedInUser();
+        RoleModel role = sharedFunctions.findRole("Manager");
         Optional<ProjectMemberModel> memberRole = projectMemberRepository.findByUserAndRole(user, role);
 
         if (memberRole.isEmpty()) {

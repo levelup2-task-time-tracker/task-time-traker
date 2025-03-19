@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION sync_deleted_at_update()
+CREATE OR REPLACE FUNCTION sync_completed_at_update()
 RETURNS TRIGGER AS $$
 BEGIN
     IF OLD.completed_at IS DISTINCT FROM NEW.completed_at THEN

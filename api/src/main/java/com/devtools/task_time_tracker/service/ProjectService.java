@@ -1,6 +1,7 @@
 package com.devtools.task_time_tracker.service;
 import com.devtools.task_time_tracker.model.*;
 import com.devtools.task_time_tracker.repository.*;
+import com.devtools.task_time_tracker.utils.SharedFunctions;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.devtools.task_time_tracker.utils.SharedFunctions.*;
@@ -28,16 +30,18 @@ public class ProjectService {
 
     @Autowired
     private RoleRepository roleRepository;
+    
+    @Autowired
+    private SharedFunctions sharedFunctions;
 
 
     @Transactional
     public ProjectModel createProject(String name, String description) throws ResponseStatusException{
-        UserModel user = getLoggedInUser(userRepository);
-        UUID projectId = UUID.randomUUID();
+        UserModel user = sharedFunctions.getLoggedInUser();
 
         ProjectModel project = new ProjectModel(name, description);
         projectRepository.save(project);
-        RoleModel role = findRole("Manager", roleRepository);
+        RoleModel role = sharedFunctions.findRole("Manager");
 
         ProjectMemberModel projectMemberModel = new ProjectMemberModel(project, user, role);
         projectMemberRepository.save(projectMemberModel);
@@ -46,13 +50,13 @@ public class ProjectService {
     }
 
     public List<ProjectModel> getUserProjects() throws ResponseStatusException{
-        UserModel user = getLoggedInUser(userRepository);
+        UserModel user = sharedFunctions.getLoggedInUser();
         return projectRepository.findByUser(user.getUserId());
     }
 
     public ProjectModel updateProject(UUID projectId, String newDescription, String newName) throws ResponseStatusException{
-        UserModel user = getLoggedInUser(userRepository);
-        ProjectModel project = findProject(projectId, projectRepository);
+        UserModel user = sharedFunctions.getLoggedInUser();
+        ProjectModel project = sharedFunctions.findProject(projectId);
         verifyManager(user, project);
 
         if (newDescription != null) {
@@ -79,8 +83,8 @@ public class ProjectService {
     }
 
     public List<UserModel> getUsers(UUID projectId, String roles) throws ResponseStatusException{
-        ProjectModel project = findProject(projectId, projectRepository);
-        UserModel user = getLoggedInUser(userRepository);
+        ProjectModel project = sharedFunctions.findProject(projectId);
+        UserModel user = sharedFunctions.getLoggedInUser();
 
         return userRepository.findByUserRoleFilter(user.getUserId(), roles);
 
@@ -89,20 +93,19 @@ public class ProjectService {
 
 
     public Boolean deleteProject(UUID projectId) throws ResponseStatusException{
-        ProjectModel project = findProject(projectId, projectRepository);
-        UserModel user = getLoggedInUser(userRepository);
+        ProjectModel project = sharedFunctions.findProject(projectId);
+        UserModel user = sharedFunctions.getLoggedInUser();
         verifyManager(user, project);
         projectRepository.delete(project);
         return true;
     }
 
-
     public Boolean addMember(UUID projectId, UUID userId, String role) throws ResponseStatusException{
-        UserModel user = getLoggedInUser(userRepository);
-        ProjectModel project = findProject(projectId, projectRepository);
+        UserModel user = sharedFunctions.getLoggedInUser();
+        ProjectModel project = sharedFunctions.findProject(projectId);
         verifyManager(user, project);
-        UserModel userToAdd = findUser(userId, userRepository);
-        RoleModel userRole = findRole(role, roleRepository);
+        UserModel userToAdd = sharedFunctions.findUser(projectId);
+        RoleModel userRole = sharedFunctions.findRole(role);
         ProjectMemberModel projectMember = new ProjectMemberModel(project, userToAdd, userRole);
         projectMemberRepository.save(projectMember);
 
@@ -110,21 +113,21 @@ public class ProjectService {
     }
 
     public Boolean removeMember(UUID projectId, UUID userId) throws ResponseStatusException{
-        UserModel user = getLoggedInUser(userRepository);
-        ProjectModel project = findProject(projectId, projectRepository);
+        UserModel user = sharedFunctions.getLoggedInUser();
+        ProjectModel project = sharedFunctions.findProject(projectId);
         verifyManager(user, project);
-        UserModel userToRemove = findUser(userId, userRepository);
+        UserModel userToRemove = sharedFunctions.findUser(projectId);
         projectMemberRepository.deleteByUserAndProject(userToRemove, project);
 
         return true;
     }
 
     public Boolean changeUserRole(UUID projectId, UUID userId, String role) throws ResponseStatusException {
-        UserModel user = getLoggedInUser(userRepository);
-        ProjectModel project = findProject(projectId, projectRepository);
+        UserModel user = sharedFunctions.getLoggedInUser();
+        ProjectModel project = sharedFunctions.findProject(projectId);
         verifyManager(user, project);
-        UserModel userToUpdate = findUser(userId, userRepository);
-        RoleModel userRole = findRole(role, roleRepository);
+        UserModel userToUpdate = sharedFunctions.findUser(projectId);
+        RoleModel userRole = sharedFunctions.findRole(role);
         Optional<ProjectMemberModel> projectMember = projectMemberRepository.findByUserAndProject(userToUpdate, project);
         if (projectMember.isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not part of project");
@@ -134,7 +137,7 @@ public class ProjectService {
     }
 
     private  void verifyManager(UserModel user, ProjectModel project) throws  ResponseStatusException{
-        RoleModel role = findRole("Manager", roleRepository);
+        RoleModel role = sharedFunctions.findRole("Manager");
         Optional<ProjectMemberModel> projectMemberModel = projectMemberRepository.findByUserAndProjectAndRole(user, project, role);
         if (projectMemberModel.isEmpty()){
             throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not the manager of the project");
@@ -210,9 +213,9 @@ public class ProjectService {
     }
 
     private void verifyUserProject(UUID projectId) throws ResponseStatusException {
-        UserModel user = getLoggedInUser(userRepository);
-        ProjectModel project = findProject(projectId, projectRepository);
-        verifyUser(user,project, projectMemberRepository);
+        UserModel user = sharedFunctions.getLoggedInUser();
+        ProjectModel project = sharedFunctions.findProject(projectId);
+        sharedFunctions.verifyUser(user,project);
     }
 
     public List<ProjectModel> getAll() {
@@ -220,6 +223,34 @@ public class ProjectService {
     }
 
     public String getUuidFromName(String projectName){
-        return getProjectUuid(projectRepository, projectName).toString();
+        return sharedFunctions.getProjectUuid(projectName).toString();
+    }
+
+    public Map<String, Object> completeProject(UUID projectId) throws ResponseStatusException{
+        List<TaskModel> tasks = getTasks(projectId);
+        boolean allTasksCompleted = tasks.stream().allMatch(task -> task.getCompletedAt() != null);
+        Map<String, Object> response = new HashMap<>();
+
+        if (allTasksCompleted) {
+            ProjectModel project = sharedFunctions.findProject(projectId);
+
+            if (project.getCompletedAt() != null) {
+                response.put("success", false);
+                response.put("message", "Project already completed");
+            } else {
+
+                project.setCompletedAt(LocalDateTime.now());
+
+                projectRepository.save(project);
+
+                response.put("success", true);
+                response.put("message", "Completed project");
+            }
+        } else {
+            response.put("success", false);
+            response.put("message", "Not all tasks in project are completed");
+        }
+
+        return response;
     }
 }
