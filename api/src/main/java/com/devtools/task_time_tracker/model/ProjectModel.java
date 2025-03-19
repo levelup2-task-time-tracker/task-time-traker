@@ -55,4 +55,8 @@ public class ProjectModel {
     private String description;
     @Column(name = "completed_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime completedAt;
+
+    public void setProjectId(UUID uuid) {
+        projectId = uuid;
+    }
 }
