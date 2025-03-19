@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellOption;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,7 @@ public class TimeCommand {
     private ApiService api;
 
     @ShellMethod(key="time-start", value="Start tracking time for a task")
-    public String startTime(String taskName){
+    public String startTime(@ShellOption(value = "--taskName", help = "The name of the task") String taskName){
         if (api.authenticate()) {
             return "You must login first.";
         }else{
@@ -35,7 +36,7 @@ public class TimeCommand {
     }
 
     @ShellMethod(key="time-stop", value="Stop tracking time for a task")
-    public String stopTime(String taskName){
+    public String stopTime(@ShellOption(value = "--taskName", help = "The name of the task") String taskName){
         if (api.authenticate()) {
             return "You must login first.";
         }else{
@@ -50,7 +51,7 @@ public class TimeCommand {
         }
     }
 
-    @ShellMethod(key = "get-anomaly-logs", value = "Return the current server log of all anomalies")
+    @ShellMethod(key = "get-anomaly-logs", value = "Return the current server log of all anomalies. Only for project managers")
     public String getAnomalies(){
         if (api.authenticate()) {
             return "You must login first.";
