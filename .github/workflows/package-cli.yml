@@ -61,6 +61,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          tag_name: TASK-TIME-TRACKER-CLI
           release_name: Release CLI
           draft: false
           prerelease: false
