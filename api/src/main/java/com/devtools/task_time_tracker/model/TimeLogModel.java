@@ -70,4 +70,7 @@ public class TimeLogModel {
     public void setUser(UserModel user) {
         this.user = user;
     }
+    public UserModel getUser() {
+        return this.user;
+    }
 }
