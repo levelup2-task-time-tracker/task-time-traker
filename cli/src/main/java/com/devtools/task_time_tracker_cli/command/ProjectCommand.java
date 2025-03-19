@@ -7,6 +7,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellOption;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -20,7 +21,7 @@ public class ProjectCommand {
     private ApiService api;
 
     @ShellMethod(key = "create-project", value = "Create a new project")
-    public String createProject(String name, String description){
+    public String createProject(@ShellOption(value = "--name", help = "Name of the project") String name, @ShellOption(value = "--description", help = "A short description of the project") String description){
         if(api.authenticate()){
             return "You must login first.";
         }else{
@@ -55,7 +56,10 @@ public class ProjectCommand {
     }
 
     @ShellMethod(key = "update-project", value = "Update a specific project")
-    public String updateProject(String projectName, String description, String name){
+    public String updateProject(@ShellOption(value = "--projectName", help = "The name of the project") String projectName,
+                                @ShellOption(value = "--newDescription", help = "The new description of the project") String description,
+                                @ShellOption(value = "--newName", help = "The new name of the project") String name)
+    {
         if(api.authenticate()){
             return "You must login first.";
         }else{
@@ -68,22 +72,6 @@ public class ProjectCommand {
                 params.put("name", name);
                 ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.POST,"projects/" + projectId, params);
                 return response.getBody();
-            }
-        }
-    }
-
-    @ShellMethod(key = "get-project-tasks", value = "Get all tasks of a specific project")
-    public String getProjectTasks(String projectName){
-        if(api.authenticate()){
-            return "You must login first.";
-        }else{
-            String projectId = getProjectUuid(projectName);
-            if(projectId.contains("404")){
-                return projectId;
-            }else{
-                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/tasks", new HashMap<>());
-                List<Map<String, Object>> parsedBody = api.jsonArrayHandler(response);
-                return api.displayResponseArray(parsedBody, "Tasks for project: " + projectName);
             }
         }
     }
@@ -103,8 +91,24 @@ public class ProjectCommand {
         }
     }
 
+    @ShellMethod(key = "get-project-tasks", value = "Get all tasks of a specific project")
+    public String getProjectTasks(@ShellOption(value = "--projectName", help = "The name of the project") String projectName){
+        if(api.authenticate()){
+            return "You must login first.";
+        }else{
+            String projectId = getProjectUuid(projectName);
+            if(projectId.contains("404")){
+                return projectId;
+            }else{
+                ResponseEntity<String> response = api.sendRequest(String.class, HttpMethod.GET,"projects/" + projectId + "/tasks", new HashMap<>());
+                List<Map<String, Object>> parsedBody = api.jsonArrayHandler(response);
+                return api.displayResponseArray(parsedBody, "Tasks for project: " + projectName);
+            }
+        }
+    }
+
     @ShellMethod(key = "delete-project", value = "Delete a specific project")
-    public String deleteProject(String projectName){
+    public String deleteProject(@ShellOption(value = "--projectName", help = "The name of the project") String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
@@ -119,7 +123,7 @@ public class ProjectCommand {
     }
 
     @ShellMethod(key = "get-project-time", value = "Get total time spent on a project")
-    public String getProjectTime(String projectName){
+    public String getProjectTime(@ShellOption(value = "--projectName", help = "The name of the project") String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
@@ -137,7 +141,7 @@ public class ProjectCommand {
     }
 
     @ShellMethod(key = "get-user-time", value = "Get total time spent by a user on a project")
-    public String getUserProjectTime(String projectName){
+    public String getUserProjectTime(@ShellOption(value = "--projectName", help = "The name of the project") String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
@@ -166,7 +170,7 @@ public class ProjectCommand {
     }
 
     @ShellMethod(key = "get-task-time", value = "Get total time spent on a task of a project")
-    public String getTaskProjectTime(String projectName){
+    public String getTaskProjectTime(@ShellOption(value = "--projectName", help = "The name of the project") String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
@@ -194,7 +198,7 @@ public class ProjectCommand {
     }
 
     @ShellMethod(key = "get-project-story-points", value = "Get total time spent per point")
-    public String getTotalPerPoint(String projectName){
+    public String getTotalPerPoint(@ShellOption(value = "--projectName", help = "The name of the project") String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
@@ -209,7 +213,7 @@ public class ProjectCommand {
     }
 
     @ShellMethod(key = "get-project-completed-tasks-story-points", value = "Get total time spent per point")
-    public String getTotalCompletedTasksStoryPoints(String projectName){
+    public String getTotalCompletedTasksStoryPoints(@ShellOption(value = "--projectName", help = "The name of the project") String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
@@ -224,7 +228,7 @@ public class ProjectCommand {
     }
 
     @ShellMethod(key = "get-avg-completed-time-per-point", value = "Get average time spent per point")
-    public String getDaysPerPoint(String projectName){
+    public String getDaysPerPoint(@ShellOption(value = "--projectName", help = "The name of the project") String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
@@ -239,7 +243,7 @@ public class ProjectCommand {
     }
 
     @ShellMethod(key = "workload-suggestions", value = "Get workload suggestions")
-    public String updateTask(String projectName){
+    public String updateTask(@ShellOption(value = "--projectName", help = "The name of the project") String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{
@@ -296,7 +300,7 @@ public class ProjectCommand {
     }
 
     @ShellMethod(key = "complete-project", value = "Complete a specific project")
-    public String completeProject(String projectName){
+    public String completeProject(@ShellOption(value = "--projectName", help = "The name of the project") String projectName){
         if(api.authenticate()){
             return "You must login first.";
         }else{

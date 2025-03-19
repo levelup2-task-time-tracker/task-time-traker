@@ -241,3 +241,13 @@
 1742369216309:login
 1742369220743:validate
 1742369224729:get-users
+1742381696034:help
+1742382692628:help get-users
+1742382718048:help get-user-info
+1742383486367:login
+1742383492879:validate
+1742383502700:get-user-info
+1742383511169:@ShellMethod("Greet a person")
+1742383511176:public String greet(@ShellOption(value = "--name", required = false, help = "The name of the person to greet") String name) {
+1742383522878:}get-user-info 1 ttt
+1742383537336:get-user-info 1 ttt
