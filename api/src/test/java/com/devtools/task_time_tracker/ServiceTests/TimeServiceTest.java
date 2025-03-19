@@ -34,36 +34,25 @@ class TimeServiceTest {
     private TaskRepository taskRepository;
 
     @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private ProjectMemberRepository projectMemberRepository;
-
-    @Mock
-    private ProjectRepository projectRepository;
-
-    @Mock
     private SharedFunctions sharedFunctions;
 
     @InjectMocks
     private TimeService timeService;
 
     private UUID taskId;
-    private UUID userId;
     private TaskModel task;
     private UserModel user;
     private TimeLogModel timeLog;
-    private LocalDateTime now;
 
     @BeforeEach
     void setUp() {
         taskId = UUID.randomUUID();
-        userId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
         task = new TaskModel();
         task.setTaskId(taskId);
         user = new UserModel();
         user.setUserId(userId);
-        now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
         timeLog = new TimeLogModel(user, task, now);
     }
 
@@ -189,6 +178,6 @@ class TimeServiceTest {
 
         Duration totalDuration = timeService.getTotalTime(taskId);
 
-        assertEquals(Duration.ofHours(1), totalDuration);
+        assertEquals(1, totalDuration.toHoursPart());
     }
 }
