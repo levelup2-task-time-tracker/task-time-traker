@@ -14,15 +14,15 @@ public class ProjectModelTest {
 
     private ProjectModel project;
     private UUID projectId;
-    private LocalDateTime deletedAt;
+    private LocalDateTime completedAt;
 
     @BeforeEach
     void setUp() {
         projectId = UUID.randomUUID();
-        deletedAt = LocalDateTime.now();
+        completedAt = LocalDateTime.now();
         project = new ProjectModel("Test Project", "Test Description");
 //        project.setProjectId(projectId);
-        project.setDeletedAt(deletedAt);
+        project.setCompletedAt(completedAt);
     }
 
     @Test
@@ -41,6 +41,6 @@ public class ProjectModelTest {
         assertEquals("Updated Project", project.getName());
         assertEquals("Updated Description", project.getDescription());
         assertEquals(projectId, project.getProjectId());
-//        assertEquals(deletedAt, project.getDeletedAt());
+//        assertEquals(completedAt, project.getCompletedAt());
     }
 }
