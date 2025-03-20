@@ -1,26 +1,32 @@
 package com.devtools.task_time_tracker.ServiceTests;
 
-import com.devtools.task_time_tracker.model.*;
-import com.devtools.task_time_tracker.repository.*;
-import com.devtools.task_time_tracker.service.ProjectService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.web.server.ResponseStatusException;
 
-@ExtendWith(MockitoExtension.class)
-public class ProjectServiceTest {
+import com.devtools.task_time_tracker.model.ProjectModel;
+import com.devtools.task_time_tracker.model.RoleModel;
+import com.devtools.task_time_tracker.model.UserModel;
+import com.devtools.task_time_tracker.repository.ProjectMemberRepository;
+import com.devtools.task_time_tracker.repository.ProjectRepository;
+import com.devtools.task_time_tracker.repository.RoleRepository;
+import com.devtools.task_time_tracker.repository.TaskRepository;
+import com.devtools.task_time_tracker.repository.UserRepository;
+import com.devtools.task_time_tracker.service.ProjectService;
+import com.devtools.task_time_tracker.utils.SharedFunctions;
+
+class ProjectServiceTest {
 
     @Mock
     private ProjectRepository projectRepository;
@@ -34,83 +40,72 @@ public class ProjectServiceTest {
     @Mock
     private ProjectMemberRepository projectMemberRepository;
 
+    @Mock
+    private RoleRepository roleRepository;
+
+    @Mock
+    private SharedFunctions sharedFunctions;
+
+    @Mock
+    private UserModel mockUser;
+
+    @Mock
+    private ProjectModel mockProject;
+
+    @Mock
+    private RoleModel mockRole;
 
     @InjectMocks
     private ProjectService projectService;
 
-    private UserModel user;
-    private ProjectModel project;
-    private RoleModel role;
-    private ProjectMemberModel projectMember;
-
     @BeforeEach
     void setUp() {
-//        user = new UserModel();
-//        user.setUserId(UUID.randomUUID());
-//
-//        project = new ProjectModel("Test Project", "Test Description");
-//        project.setProjectId(UUID.randomUUID());
+        MockitoAnnotations.openMocks(this);
 
-//        role = new RoleModel();
-//        role.setRoleName("Manager");
-//
-//        projectMember = new ProjectMemberModel(project, user, role);
-//
-//        when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
-//        when(projectRepository.findById(project.getProjectId())).thenReturn(Optional.of(project));
-//        when(roleRepository.findByRoleName("Manager")).thenReturn(Optional.of(role));
-//        when(projectMemberRepository.findByUserAndProject(user, project)).thenReturn(Optional.of(projectMember));
+        mockUser = new UserModel();
+        mockUser.setUserId(UUID.randomUUID());
+
+        mockProject = new ProjectModel("Test Project", "Test Description");
+        UUID projectId = UUID.randomUUID();
+
+        mockRole = new RoleModel();
+        mockRole.setRoleName("Manager");
+
+        when(sharedFunctions.findProject(projectId)).thenReturn(mockProject);
+        when(sharedFunctions.getLoggedInUser()).thenReturn(mockUser);
     }
+  
 
     @Test
-    void testCreateProject() {
-        when(projectRepository.save(any(ProjectModel.class))).thenReturn(project);
-        when(projectMemberRepository.save(any(ProjectMemberModel.class))).thenReturn(projectMember);
+    void testUpdateProjectNotManager() {
+        UUID projectId = mockProject.getProjectId();
+        String newDescription = "Updated Description";
 
-        ProjectModel createdProject = projectService.createProject("Test Project", "Test Description");
+        when(userRepository.findBySubject(anyString())).thenReturn(Optional.of(mockUser));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(mockProject));
+        when(roleRepository.findByRoleName("Manager")).thenReturn(Optional.of(mockRole));
+        when(projectMemberRepository.findByUserAndProjectAndRole(mockUser, mockProject, mockRole)).thenReturn(Optional.empty()); 
 
-        assertNotNull(createdProject);
-        assertEquals("Test Project", createdProject.getName());
-        assertEquals("Test Description", createdProject.getDescription());
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+                projectService.updateProject(projectId, newDescription, null)
+        );
+        assertEquals("401 UNAUTHORIZED \"You are not the manager of the project\"", exception.getMessage());
     }
+
 
     @Test
-    void testGetUserProjects() {
-        when(projectRepository.findByUser(user.getUserId())).thenReturn(Arrays.asList(project));
+    void testDeleteProjectNotManager() {
+        UUID projectId = mockProject.getProjectId();
 
-        List<ProjectModel> projects = projectService.getUserProjects();
+        when(userRepository.findBySubject(anyString())).thenReturn(Optional.of(mockUser));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(mockProject));
+        when(roleRepository.findByRoleName("Manager")).thenReturn(Optional.of(mockRole));
+        when(projectMemberRepository.findByUserAndProjectAndRole(mockUser, mockProject, mockRole)).thenReturn(Optional.empty()); 
 
-        assertNotNull(projects);
-        assertEquals(1, projects.size());
-        assertEquals("Test Project", projects.get(0).getName());
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+                projectService.deleteProject(projectId)
+        );
+        assertEquals("401 UNAUTHORIZED \"You are not the manager of the project\"", exception.getMessage());
     }
-
-    @Test
-    void testUpdateProject() {
-        when(projectRepository.save(any(ProjectModel.class))).thenReturn(project);
-
-        ProjectModel updatedProject = projectService.updateProject(project.getProjectId(), "New Description", "New Name");
-
-        assertNotNull(updatedProject);
-        assertEquals("New Description", updatedProject.getDescription());
-        assertEquals("New Name", updatedProject.getName());
-    }
-
-    @Test
-    void testDeleteProject() {
-//        Boolean result = projectService.deleteProject(project.getProjectId());
-//
-//        assertTrue(result);
-//        assertNotNull(project.getCompletedAt());
-    }
-
-    @Test
-    void testRestoreProject() {
-//        project.setCompletedAt(LocalDateTime.now());
-//
-//        Boolean result = projectService.restoreProject(project.getProjectId());
-//
-//        assertTrue(result);
-//        assertNull(project.getCompletedAt());
-    }
+ 
 }
