@@ -14,20 +14,15 @@ import static com.devtools.task_time_tracker.utils.SharedFunctions.*;
 
 @Service
 public class ProjectService {
-    @Autowired
-    private ProjectRepository projectRepository;
+    @Autowired ProjectRepository projectRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    @Autowired UserRepository userRepository;
 
-    @Autowired
-    private TaskRepository taskRepository;
+    @Autowired TaskRepository taskRepository;
 
-    @Autowired
-    private ProjectMemberRepository projectMemberRepository;
+    @Autowired ProjectMemberRepository projectMemberRepository;
 
-    @Autowired
-    private RoleRepository roleRepository;
+    @Autowired RoleRepository roleRepository;
 
 
     @Transactional

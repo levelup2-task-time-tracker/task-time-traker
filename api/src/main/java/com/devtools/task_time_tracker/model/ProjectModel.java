@@ -51,4 +51,8 @@ public class ProjectModel {
     private String description;
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
+
+    public void setProjectId(UUID randomUUID) {
+        this.projectId = randomUUID;
+    }
 }
